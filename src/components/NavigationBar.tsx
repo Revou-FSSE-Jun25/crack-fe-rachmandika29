@@ -1,9 +1,42 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function NavigationBar() {
   const [open, setOpen] = useState(false);
+  const router = useRouter();
+  const [auth, setAuth] = useState<{ authenticated: boolean; role: "user" | "admin" | null; email: string | null } | null>(null);
+  const [signingOut, setSigningOut] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      try {
+        const res = await fetch("/api/auth/status", { cache: "no-store" });
+        const json = await res.json();
+        if (active) setAuth(json);
+      } catch {
+        if (active) setAuth({ authenticated: false, role: null, email: null });
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const handleSignOut = async () => {
+    if (signingOut) return;
+    setSigningOut(true);
+    try {
+      await fetch("/api/auth/signout", { method: "POST" });
+    } finally {
+      const role = auth?.role;
+      setAuth({ authenticated: false, role: null, email: null });
+      router.replace(role === "admin" ? "/admin/signin" : "/signin");
+      setSigningOut(false);
+    }
+  };
 
   return (
     <nav className={`montserrat bg-black text-gray-200 border-b border-white/10 px-4 sm:px-6 py-3`}>
@@ -15,17 +48,43 @@ export default function NavigationBar() {
         <div className="flex items-center gap-3">
           {/* Desktop menu (right-aligned) */}
           <ul className="hidden sm:flex list-none m-0 p-0 gap-3 font-medium">
-            <li>
-              <Link href="/signin" className="text-gray-300 hover:text-white transition-colors">
-                Sign In
-              </Link>
-            </li>
-            <li className="text-gray-500">/</li>
-            <li>
-              <Link href="/signup" className="text-gray-300 hover:text-white transition-colors">
-                Sign Up
-              </Link>
-            </li>
+            {auth?.authenticated ? (
+              <>
+                <li>
+                  <Link
+                    href={auth.role === "admin" ? "/admin" : "/dashboard"}
+                    className="text-gray-300 hover:text-white transition-colors"
+                  >
+                    {auth.role === "admin" ? "Admin" : "Dashboard"}
+                  </Link>
+                </li>
+                <li className="text-gray-500">/</li>
+                <li>
+                  <button
+                    type="button"
+                    className="text-gray-300 hover:text-white transition-colors"
+                    onClick={handleSignOut}
+                    disabled={signingOut}
+                  >
+                    {signingOut ? "Signing Out..." : "Sign Out"}
+                  </button>
+                </li>
+              </>
+            ) : (
+              <>
+                <li>
+                  <Link href="/signin" className="text-gray-300 hover:text-white transition-colors">
+                    Sign In
+                  </Link>
+                </li>
+                <li className="text-gray-500">/</li>
+                <li>
+                  <Link href="/signup" className="text-gray-300 hover:text-white transition-colors">
+                    Sign Up
+                  </Link>
+                </li>
+              </>
+            )}
           </ul>
 
           {/* Mobile hamburger toggle (right side) */}
@@ -71,17 +130,41 @@ export default function NavigationBar() {
       <div id="mobile-menu" className={`${open ? "block" : "hidden"} sm:hidden mt-2`}>
         <div className="flex justify-end">
           <ul className="flex flex-col list-none m-0 p-0 gap-2 font-medium text-right">
-            <li>
-              <Link href="/signin" className="text-gray-300 hover:text-white transition-colors">
-                Sign In
-              </Link>
-            </li>
-            <li className="text-gray-500">/</li>
-            <li>
-              <Link href="/signup" className="text-gray-300 hover:text-white transition-colors">
-                Sign Up
-              </Link>
-            </li>
+            {auth?.authenticated ? (
+              <>
+                <li>
+                  <Link
+                    href={auth.role === "admin" ? "/admin" : "/dashboard"}
+                    className="text-gray-300 hover:text-white transition-colors"
+                  >
+                    {auth.role === "admin" ? "Admin" : "Dashboard"}
+                  </Link>
+                </li>
+                <li>
+                  <button
+                    type="button"
+                    className="text-gray-300 hover:text-white transition-colors text-right"
+                    onClick={handleSignOut}
+                    disabled={signingOut}
+                  >
+                    {signingOut ? "Signing Out..." : "Sign Out"}
+                  </button>
+                </li>
+              </>
+            ) : (
+              <>
+                <li>
+                  <Link href="/signin" className="text-gray-300 hover:text-white transition-colors">
+                    Sign In
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/signup" className="text-gray-300 hover:text-white transition-colors">
+                    Sign Up
+                  </Link>
+                </li>
+              </>
+            )}
           </ul>
         </div>
       </div>
