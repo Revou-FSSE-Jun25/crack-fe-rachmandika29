@@ -3,11 +3,10 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 
 const slides = [
-  { src: "/file.svg", alt: "Placeholder 1" },
-  { src: "/globe.svg", alt: "Placeholder 2" },
-  { src: "/next.svg", alt: "Placeholder 3" },
-  { src: "/vercel.svg", alt: "Placeholder 4" },
-  { src: "/window.svg", alt: "Placeholder 5" },
+  { src: "/2148422373.jpg", alt: "Restaurant ambiance 1" },
+  { src: "/2313.jpg", alt: "Restaurant ambiance 2" },
+  { src: "/hostess-arranging-chairs-around-table.jpg", alt: "Hostess arranging chairs" },
+  { src: "/side-view-couple-date.jpg", alt: "Couple dining side view" },
 ];
 
 export default function HeroLanding() {
@@ -34,7 +33,7 @@ export default function HeroLanding() {
               alt={s.alt}
               fill
               priority={i === index}
-              className="object-contain"
+              className="object-cover"
             />
           </div>
         ))}
