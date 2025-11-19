@@ -23,7 +23,7 @@ export default function HeroLanding() {
   return (
     <section className="montserrat relative bg-black text-white">
       {/* Slider */}
-      <div className="relative h-[60vh] w-full overflow-hidden">
+      <div className="relative h-[70vh] sm:h-[75vh] w-full overflow-hidden">
         {slides.map((s, i) => (
           <div
             key={s.alt}
