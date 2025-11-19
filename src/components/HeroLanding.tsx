@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const slides = [
@@ -11,6 +12,13 @@ const slides = [
 
 export default function HeroLanding() {
   const [index, setIndex] = useState(0);
+  const router = useRouter();
+
+  const handleNavigate = (target: string) => {
+    const isAuthenticated = typeof document !== "undefined" && document.cookie.includes("auth_token=");
+    const url = isAuthenticated ? target : `/signin?callbackUrl=${encodeURIComponent(target)}`;
+    router.push(url);
+  };
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -52,12 +60,14 @@ export default function HeroLanding() {
               <button
                 type="button"
                 className="inline-flex items-center justify-center rounded-md bg-white text-black px-5 py-2 font-medium hover:bg-zinc-200 transition-colors"
+                onClick={() => handleNavigate("/dashboard/reservation")}
               >
                 Reserve Table
               </button>
               <button
                 type="button"
                 className="inline-flex items-center justify-center rounded-md border border-white text-white px-5 py-2 font-medium hover:bg-white/10 transition-colors"
+                onClick={() => handleNavigate("/dashboard/menu")}
               >
                 Explore Our Menu
               </button>
