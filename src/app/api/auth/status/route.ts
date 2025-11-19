@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import { Buffer } from "node:buffer";
 
 function parseAuthToken(token?: string | null): { authenticated: boolean; role: "user" | "admin" | null; email: string | null } {
   if (!token) return { authenticated: false, role: null, email: null };

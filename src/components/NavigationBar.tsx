@@ -13,7 +13,7 @@ export default function NavigationBar() {
     let active = true;
     (async () => {
       try {
-        const res = await fetch("/api/auth/status", { cache: "no-store" });
+        const res = await fetch("/api/auth/status", { cache: "no-store", credentials: "include" });
         const json = await res.json();
         if (active) setAuth(json);
       } catch {
@@ -29,7 +29,7 @@ export default function NavigationBar() {
     if (signingOut) return;
     setSigningOut(true);
     try {
-      await fetch("/api/auth/signout", { method: "POST" });
+      await fetch("/api/auth/signout", { method: "POST", credentials: "include" });
     } finally {
       const role = auth?.role;
       setAuth({ authenticated: false, role: null, email: null });
