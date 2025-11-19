@@ -1,0 +1,2 @@
+- Refactor the authentication flow on NavigationBar.tsx
+- Review the current middleware flow
