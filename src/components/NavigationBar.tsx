@@ -38,11 +38,13 @@ export default function NavigationBar() {
     }
   };
 
+  const logoHref = auth?.authenticated ? (auth.role === "admin" ? "/admin" : "/") : "/";
+
   return (
     <nav className={`montserrat bg-black text-gray-200 border-b border-white/10 px-4 sm:px-6 py-3`}>
       <div className="flex items-center justify-between gap-4">
         {/* Left: Logo */}
-        <Link href="/" className={`zain-bold text-white text-xl tracking-wider`}>
+        <Link href={logoHref} className={`zain-bold text-white text-xl tracking-wider`}>
           DAHA/R
         </Link>
 
