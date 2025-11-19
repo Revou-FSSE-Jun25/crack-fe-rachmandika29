@@ -42,7 +42,9 @@ export default function NavigationBar() {
     <nav className={`montserrat bg-black text-gray-200 border-b border-white/10 px-4 sm:px-6 py-3`}>
       <div className="flex items-center justify-between gap-4">
         {/* Left: Logo */}
-        <span className={`zain-bold text-white text-xl tracking-wider`}>DAHA/R</span>
+        <Link href="/" className={`zain-bold text-white text-xl tracking-wider`}>
+          DAHA/R
+        </Link>
 
         {/* Right: Desktop menu + Mobile hamburger */}
         <div className="flex items-center gap-3">
