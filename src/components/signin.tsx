@@ -1,0 +1,98 @@
+"use client";
+import { useRef } from "react";
+import { signInSchema } from "@/lib/validation/authSchemas";
+import { useZodForm } from "@/lib/hooks/useZodForm";
+import { useAuthRequest } from "@/lib/hooks/useAuthRequest";
+import { useRedirectAfterAuth } from "@/lib/hooks/useRedirectAfterAuth";
+import { useFocusOnError } from "@/lib/hooks/useFocusOnError";
+
+type Props = { role?: "user" | "admin" };
+
+export default function SignIn({ role = "user" }: Props) {
+  const emailRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
+
+  const { values, setValue, errors, validate } = useZodForm(signInSchema, {
+    email: "",
+    password: "",
+  });
+
+  const { submit, pending, serverError, clearError } = useAuthRequest("/api/auth/signin");
+  const { focusFirstInvalid } = useFocusOnError({ email: emailRef, password: passwordRef });
+  const { redirect } = useRedirectAfterAuth(role);
+
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    clearError();
+    const ok = validate();
+    if (!ok) {
+      focusFirstInvalid(errors);
+      return;
+    }
+    const res = await submit({ email: values.email, password: values.password, role });
+    if (res.ok) {
+      redirect();
+    }
+  }
+
+  return (
+    <form onSubmit={onSubmit} className="space-y-6 bg-zinc-900/50 p-6 rounded-md border border-white/10">
+      <div className="text-center">
+        <h2 className="text-2xl font-semibold">{role === "admin" ? "Admin Sign In" : "Sign In"}</h2>
+        <p className="mt-2 text-sm text-zinc-400">Enter your credentials to continue.</p>
+      </div>
+
+      <div className="space-y-4">
+        <div>
+          <label htmlFor="email" className="block text-sm font-medium">Email</label>
+          <input
+            id="email"
+            ref={emailRef}
+            type="email"
+            autoComplete="email"
+            value={values.email}
+            onChange={(e) => setValue("email", e.target.value)}
+            aria-invalid={Boolean(errors.email) || undefined}
+            aria-describedby={errors.email ? "email-error" : undefined}
+            className="mt-1 w-full rounded-md bg-black border border-white/20 px-3 py-2 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-white/30"
+            placeholder="you@example.com"
+          />
+          {errors.email && (
+            <p id="email-error" className="mt-1 text-xs text-red-400">{errors.email}</p>
+          )}
+        </div>
+
+        <div>
+          <label htmlFor="password" className="block text-sm font-medium">Password</label>
+          <input
+            id="password"
+            ref={passwordRef}
+            type="password"
+            autoComplete="current-password"
+            value={values.password}
+            onChange={(e) => setValue("password", e.target.value)}
+            aria-invalid={Boolean(errors.password) || undefined}
+            aria-describedby={errors.password ? "password-error" : undefined}
+            className="mt-1 w-full rounded-md bg-black border border-white/20 px-3 py-2 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-white/30"
+            placeholder="••••••••"
+          />
+          {errors.password && (
+            <p id="password-error" className="mt-1 text-xs text-red-400">{errors.password}</p>
+          )}
+        </div>
+      </div>
+
+      {serverError && (
+        <div className="text-sm text-red-400">{serverError}</div>
+      )}
+
+      <button
+        type="submit"
+        disabled={pending}
+        className="w-full inline-flex items-center justify-center rounded-md bg-white text-black px-5 py-2 font-medium hover:bg-zinc-200 transition-colors disabled:opacity-60"
+      >
+        {pending ? "Signing in..." : "Sign In"}
+      </button>
+    </form>
+  );
+}

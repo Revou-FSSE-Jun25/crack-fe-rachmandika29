@@ -2,7 +2,13 @@
 import { useCallback } from "react";
 import type { RefObject } from "react";
 
-type RefsMap<T extends Record<string, any>> = { [K in keyof T]?: RefObject<HTMLElement> };
+type FocusableRef =
+  | RefObject<HTMLElement | null>
+  | RefObject<HTMLInputElement | null>
+  | RefObject<HTMLTextAreaElement | null>
+  | RefObject<HTMLSelectElement | null>;
+
+type RefsMap<T extends Record<string, any>> = { [K in keyof T]?: FocusableRef };
 
 export function useFocusOnError<T extends Record<string, any>>(refs: RefsMap<T>) {
   const focusFirstInvalid = useCallback((errors: { [K in keyof T]?: string }) => {
@@ -11,9 +17,8 @@ export function useFocusOnError<T extends Record<string, any>>(refs: RefsMap<T>)
     if (!first) return;
     const [key] = first;
     const ref = refs[key];
-    if (ref?.current) {
-      (ref.current as HTMLElement).focus();
-    }
+    const el = (ref as any)?.current as HTMLElement | null;
+    el?.focus();
   }, [refs]);
 
   return { focusFirstInvalid };
