@@ -1,19 +1,15 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
-import { Montserrat, Zain } from "next/font/google";
-
-const montserrat = Montserrat({ subsets: ["latin"], weight: ["400", "500", "600", "700"] });
-const zain = Zain({ subsets: ["latin"], weight: ["400", "700"] });
 
 export default function NavigationBar() {
   const [open, setOpen] = useState(false);
 
   return (
-    <nav className={`${montserrat.className} bg-black text-gray-200 border-b border-white/10 px-4 sm:px-6 py-3`}>
+    <nav className={`montserrat bg-black text-gray-200 border-b border-white/10 px-4 sm:px-6 py-3`}>
       <div className="flex items-center justify-between gap-4">
         {/* Left: Logo */}
-        <span className={`${zain.className} text-white text-xl tracking-wider`}>DAHA/R</span>
+        <span className={`zain-bold text-white text-xl tracking-wider`}>DAHA/R</span>
 
         {/* Right: Desktop menu + Mobile hamburger */}
         <div className="flex items-center gap-3">
