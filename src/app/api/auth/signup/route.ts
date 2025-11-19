@@ -12,11 +12,11 @@ export async function POST(request: Request) {
     const body = await request.json();
     const parsed = serverSignUpSchema.safeParse(body);
     if (!parsed.success) {
-      const msg = parsed.error.errors[0]?.message || "Invalid data";
+      const msg = parsed.error.issues[0]?.message || "Invalid data";
       return NextResponse.json({ ok: false, error: msg }, { status: 400 });
     }
 
-    // In a real app, create the user record here.
+  
     // Auto-login the user after sign up by issuing an auth cookie.
     const tokenPayload = `user:${parsed.data.email}`;
     const token = Buffer.from(tokenPayload).toString("base64");
