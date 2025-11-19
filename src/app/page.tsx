@@ -1,10 +1,12 @@
 import Image from "next/image";
 import NavigationBar from "@/components/NavigationBar";
+import HeroLanding from "@/components/HeroLanding";
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-black">
       <NavigationBar />
+      <HeroLanding />
       <main className="flex min-h-[calc(100vh-56px)] w-full max-w-3xl mx-auto flex-col items-center justify-between py-16 px-6 bg-white dark:bg-black sm:items-start">
         <Image
           className="dark:invert"
