@@ -1,4 +1,0 @@
-- Refactor the authentication flow on NavigationBar.tsx
-- Review the current middleware flow
-- Create JSON for mock data
-- Integrate the mock data

@@ -1,0 +1,35 @@
+[
+  {
+    "id": 1,
+    "slug": "margherita-pizza",
+    "name": "Margherita Pizza",
+    "description": "Tomato, mozzarella, fresh basil",
+    "price": 12.5,
+    "image": "/images/menu/margherita.jpg",
+    "category": "Pizza",
+    "tags": ["vegetarian", "classic"],
+    "popularity": 95
+  },
+  {
+    "id": 2,
+    "slug": "spaghetti-carbonara",
+    "name": "Spaghetti Carbonara",
+    "description": "Guanciale, egg, pecorino, black pepper",
+    "price": 14.0,
+    "image": "/images/menu/carbonara.jpg",
+    "category": "Pasta",
+    "tags": ["rich"],
+    "popularity": 88
+  },
+  {
+    "id": 3,
+    "slug": "caesar-salad",
+    "name": "Caesar Salad",
+    "description": "Romaine, parmesan, croutons, caesar dressing",
+    "price": 9.0,
+    "image": "/images/menu/caesar.jpg",
+    "category": "Salad",
+    "tags": ["light"],
+    "popularity": 72
+  }
+]
