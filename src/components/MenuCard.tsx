@@ -24,7 +24,7 @@ type Props = {
 export default function MenuCard({ item, quantity, onAdd, onIncrement, onDecrement }: Props) {
   return (
     <div className="rounded-md border border-white/10 bg-zinc-900/50 overflow-hidden">
-      <Link href={`/menu/${item.slug}`} className="block">
+      <Link href={`/dashboard/menu/${item.slug}`} className="block">
         <div className="aspect-video bg-black/50" />
         <div className="p-4 space-y-2">
           <div className="flex items-center justify-between">

@@ -13,9 +13,11 @@ type MenuItem = {
   popularity: number;
 };
 
-export default function Page({ params }: { params: { slug: string } }) {
+export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
   const items = data as MenuItem[];
-  const item = items.find((i) => i.slug === params.slug);
+  const key = decodeURIComponent(slug).trim().toLowerCase();
+  const item = items.find((i) => i.slug.trim().toLowerCase() === key);
   if (!item) return notFound();
 
   return (
