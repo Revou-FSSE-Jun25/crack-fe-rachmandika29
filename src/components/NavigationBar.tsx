@@ -1,11 +1,12 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 export default function NavigationBar() {
   const [open, setOpen] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
   const [auth, setAuth] = useState<{ authenticated: boolean; role: "user" | "admin" | null; email: string | null } | null>(null);
   const [signingOut, setSigningOut] = useState(false);
 
@@ -23,7 +24,7 @@ export default function NavigationBar() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [pathname]);
 
   const handleSignOut = async () => {
     if (signingOut) return;
