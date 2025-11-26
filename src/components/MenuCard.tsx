@@ -23,12 +23,12 @@ type Props = {
 
 export default function MenuCard({ item, quantity, onAdd, onIncrement, onDecrement }: Props) {
   return (
-    <div className="rounded-md border border-white/10 bg-zinc-900/50 overflow-hidden">
-      <Link href={`/dashboard/menu/${item.slug}`} className="block">
+    <div className="h-full flex flex-col rounded-md border border-white/10 bg-zinc-900/50 overflow-hidden">
+      <Link href={`/dashboard/menu/${item.slug}`} className="block flex-1">
         <div className="aspect-video bg-black/50" />
         <div className="p-4 space-y-2">
           <div className="flex items-center justify-between">
-            <h3 className="font-semibold">{item.name}</h3>
+            <h3 className="font-semibold line-clamp-1">{item.name}</h3>
             <span className="text-sm text-zinc-400">${item.price.toFixed(2)}</span>
           </div>
           <p className="text-sm text-zinc-400 line-clamp-2">{item.description}</p>
