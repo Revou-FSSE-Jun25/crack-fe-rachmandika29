@@ -1,0 +1,24 @@
+{
+  "clients": [
+    {
+      "id": 1,
+      "name": "Client One",
+      "email": "client@example.com",
+      "password": "clientpass123"
+    },
+    {
+      "id": 2,
+      "name": "Client Two",
+      "email": "client2@example.com",
+      "password": "clientpass456"
+    }
+  ],
+  "admins": [
+    {
+      "id": 1,
+      "name": "Admin One",
+      "email": "admin@example.com",
+      "password": "adminpass123"
+    }
+  ]
+}

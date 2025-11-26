@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { signInSchema } from "@/lib/validation/authSchemas";
+import users from "@/data/users.json";
+type User = { id: number; name: string; email: string; password: string };
 
 const roleSchema = z.object({ role: z.enum(["user", "admin"]).optional() });
 
@@ -16,9 +18,12 @@ export async function POST(request: Request) {
     const roleParsed = roleSchema.safeParse(body);
     const role = roleParsed.success && roleParsed.data.role ? roleParsed.data.role : "user";
 
-    
-    // For now, accept any valid payload and issue an auth cookie.
-    const tokenPayload = `${role}:${parsed.data.email}`;
+    const list: User[] = role === "admin" ? (users.admins as User[]) : (users.clients as User[]);
+    const found = list.find((u) => u.email.toLowerCase() === parsed.data.email.toLowerCase());
+    if (!found || found.password !== parsed.data.password) {
+      return NextResponse.json({ ok: false, error: "Invalid credentials" }, { status: 401 });
+    }
+    const tokenPayload = `${role}:${found.email}`;
     const token = Buffer.from(tokenPayload).toString("base64");
 
     const res = NextResponse.json({ ok: true });
