@@ -1,7 +1,8 @@
 "use client";
 import { useMemo, useEffect, useState, useDeferredValue } from "react";
-import Link from "next/link";
 import SearchBar from "./SearchBar";
+import MenuCard from "./MenuCard";
+import MenuGrid from "./MenuGrid";
 import data from "@/data/menu.json";
 
 type MenuItem = {
@@ -105,57 +106,24 @@ export default function MenuList() {
         </select>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <MenuGrid>
         {filtered.map((item) => {
           const qty = quantities[item.slug] ?? 0;
           return (
-            <div key={item.slug} className="rounded-md border border-white/10 bg-zinc-900/50 overflow-hidden">
-              <Link href={`/menu/${item.slug}`} className="block">
-                <div className="aspect-video bg-black/50" />
-                <div className="p-4 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-semibold">{item.name}</h3>
-                    <span className="text-sm text-zinc-400">${item.price.toFixed(2)}</span>
-                  </div>
-                  <p className="text-sm text-zinc-400 line-clamp-2">{item.description}</p>
-                </div>
-              </Link>
-              <div className="p-4 border-t border-white/10 flex items-center justify-between">
-                {qty === 0 ? (
-                  <button
-                    type="button"
-                    className="rounded-md bg-white text-black px-3 py-1 text-sm font-medium hover:bg-zinc-200"
-                    onClick={() => handleAdd(item.slug)}
-                  >
-                    Add
-                  </button>
-                ) : (
-                  <div className="inline-flex items-center gap-3">
-                    <button
-                      type="button"
-                      className="rounded-md border border-white/20 px-2 py-1 text-sm hover:bg-white/10"
-                      onClick={() => handleDec(item.slug)}
-                    >
-                      -
-                    </button>
-                    <span className="text-sm">{qty}</span>
-                    <button
-                      type="button"
-                      className="rounded-md border border-white/20 px-2 py-1 text-sm hover:bg-white/10"
-                      onClick={() => handleInc(item.slug)}
-                    >
-                      +
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
+            <MenuCard
+              key={item.slug}
+              item={item}
+              quantity={qty}
+              onAdd={() => handleAdd(item.slug)}
+              onIncrement={() => handleInc(item.slug)}
+              onDecrement={() => handleDec(item.slug)}
+            />
           );
         })}
         {filtered.length === 0 && (
           <div className="col-span-full text-center text-sm text-zinc-400">No menus match your search</div>
         )}
-      </div>
+      </MenuGrid>
     </div>
   );
 }
