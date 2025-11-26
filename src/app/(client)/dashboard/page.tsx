@@ -1,5 +1,5 @@
 import MenuGrid from "@/components/MenuGrid";
-import DashboardTile from "@/components/DashboardTile";
+import DashboardCard from "@/components/DashboardCard";
 
 export default function Home() {
   return (
@@ -10,17 +10,17 @@ export default function Home() {
           <p className="text-sm text-zinc-400">Quick access to core sections</p>
         </div>
         <MenuGrid>
-          <DashboardTile
+          <DashboardCard
             title="Bookings"
             description="View and manage your upcoming reservations"
             href="/dashboard/bookings"
           />
-          <DashboardTile
+          <DashboardCard
             title="Menu"
             description="Explore dishes and start your order"
             href="/dashboard/menu"
           />
-          <DashboardTile
+          <DashboardCard
             title="Reservation"
             description="Reserve a table for your visit"
             href="/dashboard/reservation"

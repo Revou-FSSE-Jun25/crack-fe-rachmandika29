@@ -7,7 +7,7 @@ type Props = {
   href: string;
 };
 
-export default function DashboardTile({ title, description, href }: Props) {
+export default function DashboardCard({ title, description, href }: Props) {
   return (
     <Link href={href} className="block">
       <div className="rounded-md border border-white/10 bg-zinc-900/50 overflow-hidden hover:bg-zinc-900/70 transition-colors">
