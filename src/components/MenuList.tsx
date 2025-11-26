@@ -1,9 +1,12 @@
 "use client";
-import { useMemo, useEffect, useState, useDeferredValue } from "react";
+import { useMemo, useEffect, useState } from "react";
 import SearchBar from "./SearchBar";
 import MenuCard from "./MenuCard";
 import MenuGrid from "./MenuGrid";
 import data from "@/data/menu.json";
+import { useSearchField } from "@/lib/hooks/useSearchField";
+import { useCategoryFilter } from "@/lib/hooks/useCategoryFilter";
+import { useDebouncedValue } from "@/lib/hooks/useDebouncedValue";
 
 type MenuItem = {
   id: number;
@@ -22,11 +25,10 @@ type Quantities = Record<string, number>;
 export default function MenuList() {
   const items = data as MenuItem[];
   const categories = useMemo(() => Array.from(new Set(items.map((i) => i.category))), [items]);
-
-  const [query, setQuery] = useState("");
-  const [category, setCategory] = useState<string | null>(null);
+  const search = useSearchField("");
+  const { selectedCategory, setSelectedCategory, chips } = useCategoryFilter(categories, null);
   const [sort, setSort] = useState<"relevance" | "price_asc" | "price_desc" | "popular">("relevance");
-  const deferredQuery = useDeferredValue(query);
+  const debouncedQuery = useDebouncedValue(search.value, 250);
   const [quantities, setQuantities] = useState<Quantities>(() => {
     try {
       const raw = typeof window !== "undefined" ? localStorage.getItem("menu_quantities") : null;
@@ -45,9 +47,9 @@ export default function MenuList() {
 
   const filtered = useMemo(() => {
     let list = items;
-    if (category) list = list.filter((i) => i.category === category);
-    if (deferredQuery) {
-      const q = deferredQuery.trim().toLowerCase();
+    if (selectedCategory) list = list.filter((i) => i.category === selectedCategory);
+    if (debouncedQuery) {
+      const q = debouncedQuery.trim().toLowerCase();
       list = list.filter((i) => i.name.toLowerCase().includes(q) || i.tags.some((t) => t.toLowerCase().includes(q)) || i.description.toLowerCase().includes(q));
     }
     switch (sort) {
@@ -64,7 +66,7 @@ export default function MenuList() {
         break;
     }
     return list;
-  }, [items, category, deferredQuery, sort]);
+  }, [items, selectedCategory, debouncedQuery, sort]);
 
   const handleAdd = (slug: string) => {
     setQuantities((q) => ({ ...q, [slug]: (q[slug] ?? 0) + 1 }));
@@ -84,12 +86,12 @@ export default function MenuList() {
   return (
     <div className="space-y-6">
       <SearchBar
-        value={query}
-        onChange={setQuery}
-        onClear={() => setQuery("")}
-        categories={categories}
-        selectedCategory={category}
-        onSelectCategory={(c) => setCategory(c)}
+        value={search.value}
+        onChange={search.setValue}
+        onClear={search.clear}
+        categories={chips}
+        selectedCategory={selectedCategory}
+        onSelectCategory={(c) => setSelectedCategory(c)}
       />
 
       <div className="flex items-center gap-3">
