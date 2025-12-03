@@ -2,7 +2,7 @@
 import AvailabilityBadge from "@/components/AvailabilityBadge";
 import type { AdminScheduleEditorProps } from "@/lib/types/ui";
 
-export default function AdminScheduleEditor({ dateIso, slots, onCreateSlot, onUpdateSlot, onDeleteSlot, onSave, pending = false, error = null, className = "" }: AdminScheduleEditorProps) {
+export default function AdminScheduleEditor({ dateIso, slots, onCreateSlot, onUpdateSlot, onDeleteSlot, onSave, totalSeats, pending = false, error = null, className = "" }: AdminScheduleEditorProps) {
   const addDefault = () => {
     const t = "18:00";
     onCreateSlot({ time: t, available: true, capacity: 6 });
@@ -11,7 +11,15 @@ export default function AdminScheduleEditor({ dateIso, slots, onCreateSlot, onUp
   return (
     <div className={`rounded-md border border-white/10 bg-zinc-900/50 p-3 sm:p-4 space-y-3 ${className}`}>
       <div className="flex items-center justify-between">
-        <div className="text-sm font-medium">{dateIso || "Select a date"}</div>
+        <div className="flex items-center gap-3">
+          <div className="text-sm font-medium">{dateIso || "Select a date"}</div>
+          {typeof totalSeats === "number" && (
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/20 px-2 py-0.5 text-xs text-white">
+              <span>Total seats</span>
+              <span className="opacity-80">{totalSeats}</span>
+            </span>
+          )}
+        </div>
         <div className="flex items-center gap-2">
           <button type="button" className="rounded-md border border-white/20 px-3 py-2 text-sm hover:bg-white/10" onClick={addDefault}>Add Slot</button>
           <button type="button" className="rounded-md bg-white text-black px-3 py-2 text-sm font-medium disabled:opacity-60" disabled={pending} onClick={onSave}>Save Changes</button>
