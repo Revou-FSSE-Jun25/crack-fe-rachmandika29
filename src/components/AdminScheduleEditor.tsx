@@ -25,7 +25,7 @@ export default function AdminScheduleEditor({ dateIso, slots, onCreateSlot, onUp
         {slots.map((s, idx) => (
           <div key={`${s.time}-${idx}`} className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-              <AvailabilityBadge variant={s.available ? "available" : "full"} label={s.available ? "Available" : "Full"} capacity={s.capacity} />
+              <AvailabilityBadge variant={Number(s.capacity) > 0 ? "available" : "full"} label={Number(s.capacity) > 0 ? "Available" : "Full"} capacity={s.capacity} />
               <input
                 type="text"
                 value={s.time}
@@ -35,17 +35,9 @@ export default function AdminScheduleEditor({ dateIso, slots, onCreateSlot, onUp
               <input
                 type="number"
                 value={typeof s.capacity === "number" ? s.capacity : 0}
-                onChange={(e) => onUpdateSlot(idx, { capacity: Number(e.target.value) })}
+                onChange={(e) => onUpdateSlot(idx, { capacity: Math.max(0, Number(e.target.value)) })}
                 className="w-24 rounded-md bg-black border border-white/20 px-2 py-1 text-white"
               />
-              <select
-                value={s.available ? "yes" : "no"}
-                onChange={(e) => onUpdateSlot(idx, { available: e.target.value === "yes" })}
-                className="rounded-md bg-black border border-white/20 px-2 py-1 text-white"
-              >
-                <option value="yes">Available</option>
-                <option value="no">Full</option>
-              </select>
             </div>
             <div className="flex items-center gap-2">
               <button type="button" className="rounded-md border border-white/20 px-3 py-1.5 text-sm hover:bg-white/10" onClick={() => onDeleteSlot(idx)}>Delete</button>
@@ -56,4 +48,3 @@ export default function AdminScheduleEditor({ dateIso, slots, onCreateSlot, onUp
     </div>
   );
 }
-
