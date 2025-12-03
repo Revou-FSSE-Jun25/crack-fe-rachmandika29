@@ -6,6 +6,7 @@ import AdminFeedback from "@/components/AdminFeedback";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import DatePickerCalendar from "@/components/DatePickerCalendar";
 import { useAvailableDates } from "@/lib/hooks/useAvailableDates";
+import { useAdminSlotsMap } from "@/lib/hooks/useAdminSlotsMap";
 import type { Slot } from "@/lib/types/reservation";
 
 export default function Home() {
@@ -15,7 +16,7 @@ export default function Home() {
   const [pending, setPending] = useState<boolean>(false);
   const [feedback, setFeedback] = useState<{ open: boolean; kind: "success" | "error" | "info"; message: string }>({ open: false, kind: "info", message: "" });
   const [confirm, setConfirm] = useState<{ open: boolean; idx: number }>({ open: false, idx: -1 });
-  const [map, setMap] = useState<Record<string, Slot[]>>({});
+  const { slots: getSlots, create, update, remove, save } = useAdminSlotsMap();
 
   const { data: availableDates, refresh } = useAvailableDates({ days: 21 });
 
@@ -27,39 +28,32 @@ export default function Home() {
     });
   }, [availableDates, startDate, endDate]);
 
-  const slots = map[selectedDate || ""] || [];
+  const slots = getSlots(selectedDate);
   const visibleSlots = slots;
 
   const onCreateSlot = (slot: Slot) => {
     if (!selectedDate) return;
-    setMap((prev) => ({ ...prev, [selectedDate]: [...(prev[selectedDate] || []), slot] }));
+    create(selectedDate, slot);
   };
   const onUpdateSlot = (index: number, patch: Partial<Slot>) => {
     if (!selectedDate) return;
-    setMap((prev) => {
-      const list = [...(prev[selectedDate] || [])];
-      list[index] = { ...list[index], ...patch };
-      return { ...prev, [selectedDate]: list };
-    });
+    update(selectedDate, index, patch);
   };
   const onDeleteSlot = (index: number) => {
     setConfirm({ open: true, idx: index });
   };
   const confirmDelete = () => {
     if (!selectedDate) return;
-    setMap((prev) => {
-      const list = [...(prev[selectedDate] || [])];
-      list.splice(confirm.idx, 1);
-      return { ...prev, [selectedDate]: list };
-    });
+    remove(selectedDate, confirm.idx);
     setConfirm({ open: false, idx: -1 });
   };
   const cancelDelete = () => setConfirm({ open: false, idx: -1 });
 
   const onSave = async () => {
+    if (!selectedDate) return;
     setPending(true);
     try {
-      await new Promise((r) => setTimeout(r, 500));
+      await save(selectedDate, slots);
       setFeedback({ open: true, kind: "success", message: "Availability saved" });
     } catch {
       setFeedback({ open: true, kind: "error", message: "Failed to save availability" });
