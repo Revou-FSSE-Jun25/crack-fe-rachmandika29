@@ -55,3 +55,47 @@ export type DashboardCardProps = {
   href: string;
 };
 
+import type { Slot } from "@/lib/types/reservation";
+
+export type AdminToolbarProps = {
+  startDate?: string | null;
+  endDate?: string | null;
+  onStartDateChange?: (v: string | null) => void;
+  onEndDateChange?: (v: string | null) => void;
+  search: string;
+  onSearchChange: (v: string) => void;
+  onRefresh?: () => void;
+  className?: string;
+};
+
+export type ConfirmDialogProps = {
+  open: boolean;
+  title?: string;
+  description?: string;
+  confirmLabel?: string;
+  cancelLabel?: string;
+  onConfirm: () => void;
+  onCancel: () => void;
+  className?: string;
+};
+
+export type AdminFeedbackProps = {
+  open: boolean;
+  kind: SubmissionFeedbackKind;
+  message: string;
+  onClose?: () => void;
+  className?: string;
+};
+
+export type AdminScheduleEditorProps = {
+  dateIso: string | null;
+  slots: Slot[];
+  onCreateSlot: (slot: Slot) => void;
+  onUpdateSlot: (index: number, patch: Partial<Slot>) => void;
+  onDeleteSlot: (index: number) => void;
+  onSave?: () => void;
+  pending?: boolean;
+  error?: string | null;
+  className?: string;
+};
+
