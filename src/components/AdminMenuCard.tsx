@@ -1,15 +1,8 @@
 "use client";
 import AvailabilityBadge from "@/components/AvailabilityBadge";
-import type { MenuItem } from "@/lib/types/menu";
+import type { AdminMenuCardProps } from "@/lib/types/menu";
 
-type Props = {
-  item: MenuItem;
-  available: boolean;
-  onToggle: (v: boolean) => void;
-  className?: string;
-};
-
-export default function AdminMenuCard({ item, available, onToggle, className = "" }: Props) {
+export default function AdminMenuCard({ item, available, onToggle, className = "" }: AdminMenuCardProps) {
   return (
     <div className={`h-full flex flex-col rounded-md border border-white/10 bg-zinc-900/50 overflow-hidden ${className}`}>
       <div className="aspect-video bg-black/50" />
@@ -40,4 +33,3 @@ export default function AdminMenuCard({ item, available, onToggle, className = "
     </div>
   );
 }
-

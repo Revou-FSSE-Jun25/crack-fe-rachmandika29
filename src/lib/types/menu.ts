@@ -48,3 +48,10 @@ export type SearchBarProps = {
   onSelectCategory?: (c: string | null) => void;
 };
 
+export type AdminMenuCardProps = {
+  item: MenuItem;
+  available: boolean;
+  onToggle: (v: boolean) => void;
+  className?: string;
+};
+
