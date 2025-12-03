@@ -1,6 +1,7 @@
 "use client";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { z } from "zod";
+import { useZodFormValidation } from "@/lib/hooks/useZodFormValidation";
 
 type Values = {
   name: string;
@@ -17,12 +18,6 @@ type Props = {
 };
 
 export default function ReservationForm({ initial, onSubmit, pending = false, className = "" }: Props) {
-  const [name, setName] = useState(initial?.name || "");
-  const [email, setEmail] = useState(initial?.email || "");
-  const [phone, setPhone] = useState(initial?.phone || "");
-  const [notes, setNotes] = useState(initial?.notes || "");
-  const [errors, setErrors] = useState<{ name?: string; email?: string; phone?: string }>({});
-  const [attempted, setAttempted] = useState(false);
   const nameRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
   const phoneRef = useRef<HTMLInputElement>(null);
@@ -34,30 +29,16 @@ export default function ReservationForm({ initial, onSubmit, pending = false, cl
     notes: z.string().optional(),
   });
 
+  const { values, setValue, errors, attempted, validateField, submit } = useZodFormValidation(schema, initial || {});
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const result = schema.safeParse({ name, email, phone, notes });
-    if (!result.success) {
-      setAttempted(true);
-      const nextErrors: { name?: string; email?: string; phone?: string } = {};
-      for (const issue of result.error.issues) {
-        const field = issue.path[0] as keyof typeof nextErrors;
-        if (field && !nextErrors[field]) nextErrors[field] = issue.message;
-      }
-      setErrors(nextErrors);
-      if (nextErrors.name && nameRef.current) nameRef.current.focus();
-      else if (nextErrors.email && emailRef.current) emailRef.current.focus();
-      else if (nextErrors.phone && phoneRef.current) phoneRef.current.focus();
-      return;
+    const res = submit((vals) => onSubmit(vals as Values));
+    if (!res.ok) {
+      if (res.firstErrorKey === "name" && nameRef.current) nameRef.current.focus();
+      else if (res.firstErrorKey === "email" && emailRef.current) emailRef.current.focus();
+      else if (res.firstErrorKey === "phone" && phoneRef.current) phoneRef.current.focus();
     }
-    setErrors({});
-    onSubmit({ name, email, phone, notes });
-  };
-
-  const validateField = (field: "name" | "email" | "phone", value: string) => {
-    const single = schema.pick({ [field]: true });
-    const r = single.safeParse({ [field]: value });
-    setErrors((prev) => ({ ...prev, [field]: r.success ? undefined : r.error.issues[0]?.message || "Invalid" }));
   };
 
   return (
@@ -70,9 +51,9 @@ export default function ReservationForm({ initial, onSubmit, pending = false, cl
         <input
           id="name"
           type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          onBlur={() => validateField("name", name)}
+          value={values.name || ""}
+          onChange={(e) => setValue("name", e.target.value)}
+          onBlur={() => validateField("name")}
           ref={nameRef}
           className={`mt-1 w-full rounded-md bg-black border px-3 py-2 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-white/30 ${errors.name ? "border-red-400" : "border-white/20"}`}
           aria-invalid={errors.name ? "true" : undefined}
@@ -85,9 +66,9 @@ export default function ReservationForm({ initial, onSubmit, pending = false, cl
         <input
           id="email"
           type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          onBlur={() => validateField("email", email)}
+          value={values.email || ""}
+          onChange={(e) => setValue("email", e.target.value)}
+          onBlur={() => validateField("email")}
           ref={emailRef}
           className={`mt-1 w-full rounded-md bg-black border px-3 py-2 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-white/30 ${errors.email ? "border-red-400" : "border-white/20"}`}
           aria-invalid={errors.email ? "true" : undefined}
@@ -100,9 +81,9 @@ export default function ReservationForm({ initial, onSubmit, pending = false, cl
         <input
           id="phone"
           type="tel"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          onBlur={() => validateField("phone", phone)}
+          value={values.phone || ""}
+          onChange={(e) => setValue("phone", e.target.value)}
+          onBlur={() => validateField("phone")}
           ref={phoneRef}
           className={`mt-1 w-full rounded-md bg-black border px-3 py-2 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-white/30 ${errors.phone ? "border-red-400" : "border-white/20"}`}
           aria-invalid={errors.phone ? "true" : undefined}
@@ -114,8 +95,8 @@ export default function ReservationForm({ initial, onSubmit, pending = false, cl
         <label htmlFor="notes" className="block text-sm font-medium">Notes</label>
         <textarea
           id="notes"
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
+          value={values.notes || ""}
+          onChange={(e) => setValue("notes", e.target.value)}
           className="mt-1 w-full rounded-md bg-black border border-white/20 px-3 py-2 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-white/30"
           placeholder="Special requests"
           rows={3}

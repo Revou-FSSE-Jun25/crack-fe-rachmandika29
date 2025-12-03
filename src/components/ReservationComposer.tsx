@@ -10,6 +10,9 @@ import SubmissionFeedback from "@/components/SubmissionFeedback";
 import StepIndicator from "@/components/StepIndicator";
 import StepSection from "@/components/StepSection";
 import Modal from "@/components/Modal";
+import { useWizardSteps } from "@/lib/hooks/useWizardSteps";
+import { useAvailableDates } from "@/lib/hooks/useAvailableDates";
+import { useTimeSlotsForDate } from "@/lib/hooks/useTimeSlotsForDate";
 
 type Slot = { time: string; available: boolean; capacity?: number };
 
@@ -20,25 +23,20 @@ export default function ReservationComposer() {
   const [guests, setGuests] = useState<number>(2);
   const [pending, setPending] = useState<boolean>(false);
   const [feedback, setFeedback] = useState<{ open: boolean; kind: "success" | "error" | "info"; message: string }>({ open: false, kind: "info", message: "" });
-  const [currentStep, setCurrentStep] = useState<number>(1);
+  const { step: currentStep, setStep: setCurrentStep, canNext, next, back } = useWizardSteps({
+    total: 5,
+    guards: [
+      () => Boolean(dateIso),
+      () => Boolean(time),
+      () => guests > 0,
+    ],
+  });
   const [formValues, setFormValues] = useState<{ name: string; email: string; phone: string; notes?: string } | null>(null);
   const [openSuccessModal, setOpenSuccessModal] = useState<boolean>(false);
 
-  const availableDates: string[] = useMemo(() => {
-    const today = new Date();
-    const list: string[] = [];
-    for (let i = 0; i < 21; i++) {
-      const d = new Date(today);
-      d.setDate(today.getDate() + i);
-      list.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`);
-    }
-    return list;
-  }, []);
+  const { data: availableDates } = useAvailableDates({ days: 21 });
 
-  const slots: Slot[] = useMemo(() => {
-    const base = ["18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00"]; 
-    return base.map((t, i) => ({ time: t, available: i % 5 !== 0, capacity: 6 - (i % 3) }));
-  }, [dateIso]);
+  const { data: slots } = useTimeSlotsForDate(dateIso);
 
   const handleSubmit = async (values: { name: string; email: string; phone: string; notes?: string }) => {
     if (!dateIso || !time || guests <= 0) {
@@ -61,20 +59,6 @@ export default function ReservationComposer() {
     setTime(null);
   };
 
-  const canNextFromStep = (step: number) => {
-    if (step === 1) return Boolean(dateIso);
-    if (step === 2) return Boolean(time);
-    if (step === 3) return guests > 0;
-    return true;
-  };
-
-  const next = () => {
-    if (canNextFromStep(currentStep)) setCurrentStep((s) => Math.min(5, s + 1));
-  };
-
-  const back = () => {
-    setCurrentStep((s) => Math.max(1, s - 1));
-  };
 
   return (
     <div className="space-y-4">
@@ -107,7 +91,7 @@ export default function ReservationComposer() {
             <button type="button" className="rounded-md border border-white/20 px-3 py-2 text-sm hover:bg-white/10" disabled>
               Back
             </button>
-            <button type="button" className="rounded-md bg-white text-black px-3 py-2 text-sm font-medium disabled:opacity-60" onClick={next} disabled={!canNextFromStep(1)}>
+            <button type="button" className="rounded-md bg-white text-black px-3 py-2 text-sm font-medium disabled:opacity-60" onClick={next} disabled={!canNext}>
               Next
             </button>
           </div>
@@ -121,7 +105,7 @@ export default function ReservationComposer() {
             <button type="button" className="rounded-md border border-white/20 px-3 py-2 text-sm hover:bg-white/10" onClick={back}>
               Back
             </button>
-            <button type="button" className="rounded-md bg-white text-black px-3 py-2 text-sm font-medium disabled:opacity-60" onClick={next} disabled={!canNextFromStep(2)}>
+            <button type="button" className="rounded-md bg-white text-black px-3 py-2 text-sm font-medium disabled:opacity-60" onClick={next} disabled={!canNext}>
               Next
             </button>
           </div>
@@ -135,7 +119,7 @@ export default function ReservationComposer() {
             <button type="button" className="rounded-md border border-white/20 px-3 py-2 text-sm hover:bg-white/10" onClick={back}>
               Back
             </button>
-            <button type="button" className="rounded-md bg-white text-black px-3 py-2 text-sm font-medium disabled:opacity-60" onClick={next} disabled={!canNextFromStep(3)}>
+            <button type="button" className="rounded-md bg-white text-black px-3 py-2 text-sm font-medium disabled:opacity-60" onClick={next} disabled={!canNext}>
               Next
             </button>
           </div>

@@ -1,5 +1,5 @@
 "use client";
-import { useEffect } from "react";
+import { useEscapeToClose } from "@/lib/hooks/useEscapeToClose";
 
 type Props = {
   open: boolean;
@@ -11,15 +11,7 @@ type Props = {
 };
 
 export default function Modal({ open, onClose, title, children, footer, className = "" }: Props) {
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    if (open) {
-      window.addEventListener("keydown", onKey);
-      return () => window.removeEventListener("keydown", onKey);
-    }
-  }, [open, onClose]);
+  useEscapeToClose(open, onClose);
 
   if (!open) return null;
 

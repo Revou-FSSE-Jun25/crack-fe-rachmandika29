@@ -1,5 +1,6 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
+import { useCalendarMonth } from "@/lib/hooks/useCalendarMonth";
 
 type Props = {
   availableDates?: string[];
@@ -17,53 +18,20 @@ function toIso(d: Date) {
   return `${y}-${m}-${day}`;
 }
 
-function monthStart(date: Date) {
-  return new Date(date.getFullYear(), date.getMonth(), 1);
-}
-
-function daysInMonth(date: Date) {
-  const y = date.getFullYear();
-  const m = date.getMonth();
-  return new Date(y, m + 1, 0).getDate();
-}
-
 const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 export default function DatePickerCalendar({ availableDates = [], selected = null, onSelect, initialMonth, onMonthChange, className = "" }: Props) {
-  const [month, setMonth] = useState<Date>(monthStart(initialMonth || new Date()));
+  const { month, monthLabel, leading, days, prev, next } = useCalendarMonth({ initialMonth, onMonthChange });
   const availableSet = useMemo(() => new Set(availableDates), [availableDates]);
-
-  const firstDay = month.getDay();
-  const count = daysInMonth(month);
-  const monthLabel = `${month.toLocaleString(undefined, { month: "long" })} ${month.getFullYear()}`;
-
-  const leading = Array(firstDay).fill(null);
-  const days = Array.from({ length: count }, (_, i) => i + 1);
-
-  const handlePrev = () => {
-    const next = new Date(month);
-    next.setMonth(next.getMonth() - 1);
-    const start = monthStart(next);
-    setMonth(start);
-    onMonthChange && onMonthChange(toIso(start));
-  };
-
-  const handleNext = () => {
-    const next = new Date(month);
-    next.setMonth(next.getMonth() + 1);
-    const start = monthStart(next);
-    setMonth(start);
-    onMonthChange && onMonthChange(toIso(start));
-  };
 
   return (
     <div className={`rounded-md border border-white/10 bg-zinc-900/50 ${className}`}>
       <div className="flex items-center justify-between px-3 py-2 sm:px-4 sm:py-3">
-        <button type="button" className="rounded-md border border-white/20 px-2 py-1 text-sm hover:bg-white/10" onClick={handlePrev}>
+        <button type="button" className="rounded-md border border-white/20 px-2 py-1 text-sm hover:bg-white/10" onClick={prev}>
           Prev
         </button>
         <div className="text-sm font-medium">{monthLabel}</div>
-        <button type="button" className="rounded-md border border-white/20 px-2 py-1 text-sm hover:bg-white/10" onClick={handleNext}>
+        <button type="button" className="rounded-md border border-white/20 px-2 py-1 text-sm hover:bg-white/10" onClick={next}>
           Next
         </button>
       </div>
