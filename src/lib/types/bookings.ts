@@ -67,3 +67,45 @@ export type BookingDetailModalProps = {
   onReschedule?: (b: Booking) => void;
   className?: string;
 };
+
+export type RescheduleRequestStatus = "pending" | "accepted" | "rejected";
+
+export type RescheduleRequest = {
+  id: string;
+  bookingId: string;
+  currentDateIso: string;
+  currentTime: string;
+  requestedDateIso: string;
+  requestedTime: string;
+  guests: number;
+  status: RescheduleRequestStatus;
+  reason?: string;
+  adminNote?: string;
+};
+
+export type RescheduleRequestCardProps = {
+  request: RescheduleRequest;
+  onAccept: (r: RescheduleRequest) => void;
+  onReject: (r: RescheduleRequest) => void;
+  onView?: (r: RescheduleRequest) => void;
+  className?: string;
+};
+
+export type RescheduleRequestsListProps = {
+  requests: RescheduleRequest[];
+  loading?: boolean;
+  error?: string | null;
+  onAccept: (r: RescheduleRequest) => void;
+  onReject: (r: RescheduleRequest) => void;
+  onView?: (r: RescheduleRequest) => void;
+  className?: string;
+  empty?: React.ReactNode;
+};
+
+export type RescheduleDecisionModalProps = {
+  open: boolean;
+  request: RescheduleRequest | null;
+  onConfirm: (dateIso: string, time: string, note?: string) => void;
+  onCancel: () => void;
+  className?: string;
+};
