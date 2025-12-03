@@ -1,5 +1,6 @@
 "use client";
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import DatePickerCalendar from "@/components/DatePickerCalendar";
 import TimeSlotPicker from "@/components/TimeSlotPicker";
 import PartySizeSelector from "@/components/PartySizeSelector";
@@ -8,10 +9,12 @@ import ReservationSummaryCard from "@/components/ReservationSummaryCard";
 import SubmissionFeedback from "@/components/SubmissionFeedback";
 import StepIndicator from "@/components/StepIndicator";
 import StepSection from "@/components/StepSection";
+import Modal from "@/components/Modal";
 
 type Slot = { time: string; available: boolean; capacity?: number };
 
 export default function ReservationComposer() {
+  const router = useRouter();
   const [dateIso, setDateIso] = useState<string | null>(null);
   const [time, setTime] = useState<string | null>(null);
   const [guests, setGuests] = useState<number>(2);
@@ -19,6 +22,7 @@ export default function ReservationComposer() {
   const [feedback, setFeedback] = useState<{ open: boolean; kind: "success" | "error" | "info"; message: string }>({ open: false, kind: "info", message: "" });
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [formValues, setFormValues] = useState<{ name: string; email: string; phone: string; notes?: string } | null>(null);
+  const [openSuccessModal, setOpenSuccessModal] = useState<boolean>(false);
 
   const availableDates: string[] = useMemo(() => {
     const today = new Date();
@@ -44,7 +48,7 @@ export default function ReservationComposer() {
     setPending(true);
     try {
       await new Promise((r) => setTimeout(r, 600));
-      setFeedback({ open: true, kind: "success", message: "Reservation submitted successfully." });
+      setOpenSuccessModal(true);
     } catch {
       setFeedback({ open: true, kind: "error", message: "Failed to submit reservation." });
     } finally {
@@ -75,6 +79,27 @@ export default function ReservationComposer() {
   return (
     <div className="space-y-4">
       <SubmissionFeedback open={feedback.open} kind={feedback.kind} message={feedback.message} onClose={() => setFeedback({ ...feedback, open: false })} />
+      <Modal
+        open={openSuccessModal}
+        onClose={() => setOpenSuccessModal(false)}
+        title="Reservation Confirmed"
+        footer={
+          <>
+            <button type="button" className="rounded-md border border-white/20 px-3 py-2 text-sm hover:bg-white/10" onClick={() => setOpenSuccessModal(false)}>
+              Close
+            </button>
+            <button type="button" className="rounded-md bg-white text-black px-3 py-2 text-sm font-medium" onClick={() => router.push("/dashboard/menu")}> 
+              Continue to Menu
+            </button>
+          </>
+        }
+      >
+        <div className="space-y-1">
+          <div>{dateIso}</div>
+          <div>{time}</div>
+          <div>{guests} guests</div>
+        </div>
+      </Modal>
       <StepIndicator steps={[{ label: "Choose Date" }, { label: "Choose Time" }, { label: "Party Size" }, { label: "Details" }, { label: "Review" }]} current={currentStep} className="flex-wrap sm:flex-nowrap overflow-x-auto" />
       {currentStep === 1 && (
         <StepSection title="Choose Date" description="Select your reservation date." footer={
