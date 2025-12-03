@@ -18,12 +18,12 @@ export default function Home() {
           <DashboardCard
             title="Menu Availability"
             description="Set today and weekly menu availability"
-            href="/admin/menu-availability"
+            href="/admin/manage-menu"
           />
           <DashboardCard
             title="Reschedule Requests"
             description="Review and confirm client reschedules"
-            href="/admin/reschedules"
+            href="/admin/manage-status"
           />
         </MenuGrid>
       </main>
