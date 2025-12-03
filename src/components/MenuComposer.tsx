@@ -28,7 +28,7 @@ type MenuItem = {
 
 type Quantities = Record<string, number>;
 
-export default function MenuList() {
+export default function MenuComposer() {
   const router = useRouter();
   const items = data as MenuItem[];
   const categories = useMemo(() => Array.from(new Set(items.map((i) => i.category))), [items]);
@@ -44,7 +44,6 @@ export default function MenuList() {
       return {};
     }
   });
-
 
   useEffect(() => {
     try {
@@ -218,3 +217,4 @@ export default function MenuList() {
     </div>
   );
 }
+

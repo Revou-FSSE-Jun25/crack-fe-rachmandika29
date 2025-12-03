@@ -1,4 +1,4 @@
-import MenuList from "@/components/MenuList";
+import MenuComposer from "@/components/MenuComposer";
 
 export default function Page() {
   return (
@@ -8,7 +8,7 @@ export default function Page() {
           <h1 className="text-2xl font-semibold">Explore Our Menu</h1>
           <p className="text-sm text-zinc-500">Search, filter, and order your favorites.</p>
         </div>
-        <MenuList />
+        <MenuComposer />
       </main>
     </div>
   );
