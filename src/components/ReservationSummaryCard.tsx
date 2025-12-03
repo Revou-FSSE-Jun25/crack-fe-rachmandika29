@@ -12,7 +12,7 @@ type Props = {
 export default function ReservationSummaryCard({ dateIso, time, guests, onSubmit, disabled = false, className = "" }: Props) {
   const ready = Boolean(dateIso && time && guests > 0) && !disabled;
   return (
-    <div className={`rounded-md border border-white/10 bg-zinc-900/50 p-4 ${className}`}>
+    <div className={`rounded-md border border-white/10 bg-zinc-900/50 p-3 sm:p-4 ${className}`}>
       <div className="space-y-2">
         <div className="text-sm font-medium">Reservation Summary</div>
         <div className="text-sm text-zinc-300">{dateIso || "Select a date"}</div>

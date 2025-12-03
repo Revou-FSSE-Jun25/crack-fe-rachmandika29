@@ -27,7 +27,7 @@ export default function ReservationForm({ initial, onSubmit, pending = false, cl
   };
 
   return (
-    <form onSubmit={handleSubmit} className={`space-y-4 rounded-md border border-white/10 bg-zinc-900/50 p-4 ${className}`}>
+    <form onSubmit={handleSubmit} className={`space-y-3 sm:space-y-4 rounded-md border border-white/10 bg-zinc-900/50 p-3 sm:p-4 ${className}`}>
       <div>
         <label htmlFor="name" className="block text-sm font-medium">Name</label>
         <input

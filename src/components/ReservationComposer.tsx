@@ -75,7 +75,7 @@ export default function ReservationComposer() {
   return (
     <div className="space-y-4">
       <SubmissionFeedback open={feedback.open} kind={feedback.kind} message={feedback.message} onClose={() => setFeedback({ ...feedback, open: false })} />
-      <StepIndicator steps={[{ label: "Choose Date" }, { label: "Choose Time" }, { label: "Party Size" }, { label: "Details" }, { label: "Review" }]} current={currentStep} />
+      <StepIndicator steps={[{ label: "Choose Date" }, { label: "Choose Time" }, { label: "Party Size" }, { label: "Details" }, { label: "Review" }]} current={currentStep} className="flex-wrap sm:flex-nowrap overflow-x-auto" />
       {currentStep === 1 && (
         <StepSection title="Choose Date" description="Select your reservation date." footer={
           <div className="w-full flex items-center justify-between">
@@ -93,7 +93,7 @@ export default function ReservationComposer() {
       {currentStep === 2 && (
         <StepSection title="Choose Time" description="Select an available time slot." footer={
           <div className="w-full flex items-center justify-between">
-            <button type="button" className="rounded-md border border-white/20 px-3 py-2 text-sm hover:bg.white/10" onClick={back}>
+            <button type="button" className="rounded-md border border-white/20 px-3 py-2 text-sm hover:bg-white/10" onClick={back}>
               Back
             </button>
             <button type="button" className="rounded-md bg-white text-black px-3 py-2 text-sm font-medium disabled:opacity-60" onClick={next} disabled={!canNextFromStep(2)}>
