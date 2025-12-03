@@ -3,7 +3,16 @@ import data from "@/data/menu.json";
 import type { MenuItem } from "@/lib/types/menu";
 
 export function useAdminMenuAvailability() {
-  const items = useMemo(() => data as MenuItem[], []);
+  const baseItems = useMemo(() => data as MenuItem[], []);
+  const [customItems, setCustomItems] = useState<MenuItem[]>(() => {
+    try {
+      const raw = typeof window !== "undefined" ? localStorage.getItem("admin_menu_custom_items") : null;
+      const parsed = raw ? JSON.parse(raw) : null;
+      if (Array.isArray(parsed)) return parsed as MenuItem[];
+    } catch {}
+    return [];
+  });
+  const items = useMemo(() => [...baseItems, ...customItems], [baseItems, customItems]);
   const [availability, setAvailability] = useState<Record<string, boolean>>(() => {
     try {
       const raw = typeof window !== "undefined" ? localStorage.getItem("admin_menu_availability") : null;
@@ -11,7 +20,7 @@ export function useAdminMenuAvailability() {
       if (parsed && typeof parsed === "object") return parsed as Record<string, boolean>;
     } catch {}
     const initial: Record<string, boolean> = {};
-    for (const i of items) initial[i.slug] = true;
+    for (const i of [...baseItems]) initial[i.slug] = true;
     return initial;
   });
   const [pending, setPending] = useState(false);
@@ -22,6 +31,12 @@ export function useAdminMenuAvailability() {
       localStorage.setItem("admin_menu_availability", JSON.stringify(availability));
     } catch {}
   }, [availability]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("admin_menu_custom_items", JSON.stringify(customItems));
+    } catch {}
+  }, [customItems]);
 
   const setAvailable = (slug: string, v: boolean) => {
     setAvailability((prev) => ({ ...prev, [slug]: v }));
@@ -47,6 +62,13 @@ export function useAdminMenuAvailability() {
     }
   };
 
-  return { items, availability, setAvailable, bulkSet, save, pending, error };
+  const createItem = (item: Omit<MenuItem, "id">) => {
+    const nextId = Math.max(0, ...items.map((i) => i.id)) + 1;
+    const full: MenuItem = { id: nextId, ...item } as MenuItem;
+    setCustomItems((prev) => [...prev, full]);
+    setAvailability((prev) => ({ ...prev, [full.slug]: true }));
+  };
+
+  return { items, availability, setAvailable, bulkSet, save, pending, error, createItem };
 }
 

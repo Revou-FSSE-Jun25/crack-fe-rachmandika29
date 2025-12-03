@@ -9,6 +9,8 @@ import { useAdminMenuAvailability } from "@/lib/hooks/useAdminMenuAvailability";
 import { useSearchField } from "@/lib/hooks/useSearchField";
 import { useDebouncedValue } from "@/lib/hooks/useDebouncedValue";
 import { useCategoryFilter } from "@/lib/hooks/useCategoryFilter";
+import Modal from "@/components/Modal";
+import AdminMenuForm from "@/components/AdminMenuForm";
 
 export default function Home() {
   const { items, availability, setAvailable, bulkSet, save, pending, error } = useAdminMenuAvailability();
@@ -18,6 +20,7 @@ export default function Home() {
   const debouncedQuery = useDebouncedValue(search.value, 250);
   const [feedback, setFeedback] = useState<{ open: boolean; kind: "success" | "error" | "info"; message: string }>({ open: false, kind: "info", message: "" });
   const [confirm, setConfirm] = useState<{ open: boolean; action: "disable_all" | null }>({ open: false, action: null });
+  const [openCreate, setOpenCreate] = useState<boolean>(false);
 
   const filtered = useMemo(() => {
     let list = items;
@@ -44,6 +47,8 @@ export default function Home() {
     setConfirm({ open: false, action: null });
   };
 
+  const { createItem } = useAdminMenuAvailability();
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-black">
       <main className="w-full max-w-5xl p-6 space-y-6">
@@ -54,6 +59,22 @@ export default function Home() {
 
         <AdminFeedback open={feedback.open} kind={feedback.kind} message={feedback.message} onClose={() => setFeedback({ ...feedback, open: false })} />
         <ConfirmDialog open={confirm.open} title="Disable All" description="Disable availability for all filtered items?" onConfirm={disableAll} onCancel={() => setConfirm({ open: false, action: null })} />
+        <Modal
+          open={openCreate}
+          onClose={() => setOpenCreate(false)}
+          title="Add New Menu"
+          footer={null}
+        >
+          <AdminMenuForm
+            existingSlugs={items.map((i) => i.slug)}
+            categories={categories}
+            onSubmit={(itm) => {
+              createItem(itm as any);
+              setOpenCreate(false);
+              setFeedback({ open: true, kind: "success", message: "New menu created" });
+            }}
+          />
+        </Modal>
 
         <div className="space-y-4">
           <SearchBar
@@ -68,6 +89,7 @@ export default function Home() {
           <div className="flex items-center justify-between">
             <div className="text-sm text-zinc-400">{filtered.length} items</div>
             <div className="inline-flex items-center gap-2">
+              <button type="button" className="rounded-md border border-white/20 px-3 py-2 text-sm hover:bg-white/10" onClick={() => setOpenCreate(true)}>Add New Menu</button>
               <button type="button" className="rounded-md border border-white/20 px-3 py-2 text-sm hover:bg-white/10" onClick={() => setConfirm({ open: true, action: "disable_all" })}>Disable All</button>
               <button type="button" className="rounded-md bg-white text-black px-3 py-2 text-sm font-medium disabled:opacity-60" disabled={pending} onClick={onSave}>Save Changes</button>
             </div>
