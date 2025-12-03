@@ -16,7 +16,6 @@ export default function Home() {
   const [feedback, setFeedback] = useState<{ open: boolean; kind: "success" | "error" | "info"; message: string }>({ open: false, kind: "info", message: "" });
   const [confirm, setConfirm] = useState<{ open: boolean; idx: number }>({ open: false, idx: -1 });
   const [map, setMap] = useState<Record<string, Slot[]>>({});
-  const [mapSeats, setMapSeats] = useState<Record<string, number>>({});
 
   const { data: availableDates, refresh } = useAvailableDates({ days: 21 });
 
@@ -29,7 +28,6 @@ export default function Home() {
   }, [availableDates, startDate, endDate]);
 
   const slots = map[selectedDate || ""] || [];
-  const totalSeats = selectedDate ? (mapSeats[selectedDate] ?? 30) : undefined;
   const visibleSlots = slots;
 
   const onCreateSlot = (slot: Slot) => {
@@ -98,7 +96,6 @@ export default function Home() {
             onUpdateSlot={onUpdateSlot}
             onDeleteSlot={onDeleteSlot}
             onSave={onSave}
-            totalSeats={totalSeats}
             pending={pending}
           />
         </div>

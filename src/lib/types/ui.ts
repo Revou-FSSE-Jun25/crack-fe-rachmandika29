@@ -91,8 +91,6 @@ export type AdminScheduleEditorProps = {
   onCreateSlot: (slot: Slot) => void;
   onUpdateSlot: (index: number, patch: Partial<Slot>) => void;
   onDeleteSlot: (index: number) => void;
-  totalSeats?: number;
-  onTotalSeatsChange?: (n: number) => void;
   onSave?: () => void;
   pending?: boolean;
   error?: string | null;
