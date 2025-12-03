@@ -62,8 +62,6 @@ export type AdminToolbarProps = {
   endDate?: string | null;
   onStartDateChange?: (v: string | null) => void;
   onEndDateChange?: (v: string | null) => void;
-  search: string;
-  onSearchChange: (v: string) => void;
   onRefresh?: () => void;
   className?: string;
 };

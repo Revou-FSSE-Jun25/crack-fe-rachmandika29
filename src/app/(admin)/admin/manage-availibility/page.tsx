@@ -12,7 +12,6 @@ export default function Home() {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [startDate, setStartDate] = useState<string | null>(null);
   const [endDate, setEndDate] = useState<string | null>(null);
-  const [search, setSearch] = useState<string>("");
   const [pending, setPending] = useState<boolean>(false);
   const [feedback, setFeedback] = useState<{ open: boolean; kind: "success" | "error" | "info"; message: string }>({ open: false, kind: "info", message: "" });
   const [confirm, setConfirm] = useState<{ open: boolean; idx: number }>({ open: false, idx: -1 });
@@ -29,11 +28,7 @@ export default function Home() {
   }, [availableDates, startDate, endDate]);
 
   const slots = map[selectedDate || ""] || [];
-  const visibleSlots = useMemo(() => {
-    if (!search) return slots;
-    const q = search.trim().toLowerCase();
-    return slots.filter((s) => s.time.toLowerCase().includes(q));
-  }, [slots, search]);
+  const visibleSlots = slots;
 
   const onCreateSlot = (slot: Slot) => {
     if (!selectedDate) return;
@@ -89,8 +84,6 @@ export default function Home() {
           endDate={endDate}
           onStartDateChange={setStartDate}
           onEndDateChange={setEndDate}
-          search={search}
-          onSearchChange={setSearch}
           onRefresh={refresh}
         />
 
