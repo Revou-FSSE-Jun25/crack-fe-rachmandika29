@@ -7,6 +7,7 @@ export default function Page() {
         <div className="space-y-2">
           <h1 className="text-2xl font-semibold">Explore Our Menu</h1>
           <p className="text-sm text-zinc-500">Search, filter, and order your favorites.</p>
+          <p className="text-xs text-zinc-500">Your order here will be finalize and re-confirmed again in the restaurant</p>
         </div>
         <MenuComposer />
       </main>
