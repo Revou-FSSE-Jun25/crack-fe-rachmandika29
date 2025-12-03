@@ -1,0 +1,32 @@
+"use client";
+
+type Step = { label: string };
+
+type Props = {
+  steps: Step[];
+  current: number;
+  className?: string;
+};
+
+export default function StepIndicator({ steps, current, className = "" }: Props) {
+  return (
+    <div className={`flex items-center gap-3 ${className}`} aria-label="progress">
+      {steps.map((s, i) => {
+        const idx = i + 1;
+        const isActive = idx === current;
+        const isCompleted = idx < current;
+        const state = isCompleted ? "bg-white text-black border-white" : isActive ? "border-white text-white" : "border-white/20 text-zinc-400";
+        return (
+          <div key={s.label} className="flex items-center gap-3">
+            <div className="flex items-center gap-2" aria-current={isActive ? "step" : undefined}>
+              <div className={`h-6 w-6 rounded-full border text-xs font-medium inline-flex items-center justify-center ${state}`}>{idx}</div>
+              <div className={`text-sm ${isCompleted ? "text-white" : isActive ? "text-white" : "text-zinc-400"}`}>{s.label}</div>
+            </div>
+            {idx !== steps.length && <div className={`h-px w-8 ${isCompleted ? "bg-white/60" : "bg-white/10"}`} />}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
