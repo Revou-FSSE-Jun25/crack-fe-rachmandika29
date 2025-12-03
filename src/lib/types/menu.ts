@@ -12,8 +12,14 @@ export type MenuItem = {
 
 export type Quantities = Record<string, number>;
 
+export type OrderSummaryItem = {
+  slug: string;
+  name: string;
+  price: number;
+};
+
 export type OrderSummaryProps = {
-  items: MenuItem[];
+  items: OrderSummaryItem[];
   quantities: Quantities;
   onIncrement: (slug: string) => void;
   onDecrement: (slug: string) => void;

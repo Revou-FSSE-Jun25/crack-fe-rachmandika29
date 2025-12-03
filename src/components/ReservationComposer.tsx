@@ -13,8 +13,7 @@ import Modal from "@/components/Modal";
 import { useWizardSteps } from "@/lib/hooks/useWizardSteps";
 import { useAvailableDates } from "@/lib/hooks/useAvailableDates";
 import { useTimeSlotsForDate } from "@/lib/hooks/useTimeSlotsForDate";
-
-type Slot = { time: string; available: boolean; capacity?: number };
+import type { Slot } from "@/lib/types/reservation";
 
 export default function ReservationComposer() {
   const router = useRouter();
@@ -110,7 +109,7 @@ export default function ReservationComposer() {
             </button>
           </div>
         }>
-          <TimeSlotPicker slots={slots} selected={time} onSelect={setTime} />
+          <TimeSlotPicker slots={slots as Slot[]} selected={time} onSelect={setTime} />
         </StepSection>
       )}
       {currentStep === 3 && (

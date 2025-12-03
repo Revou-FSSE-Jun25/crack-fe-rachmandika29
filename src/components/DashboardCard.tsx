@@ -1,13 +1,8 @@
 "use client";
 import Link from "next/link";
+import type { DashboardCardProps } from "@/lib/types/ui";
 
-type Props = {
-  title: string;
-  description: string;
-  href: string;
-};
-
-export default function DashboardCard({ title, description, href }: Props) {
+export default function DashboardCard({ title, description, href }: DashboardCardProps) {
   return (
     <Link href={href} className="block h-full">
       <div className="h-full flex flex-col rounded-md border border-white/10 bg-zinc-900/50 overflow-hidden hover:bg-zinc-900/70 transition-colors">

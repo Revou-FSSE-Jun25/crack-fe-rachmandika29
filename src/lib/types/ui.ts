@@ -40,3 +40,18 @@ export type EmptyStateProps = {
   className?: string;
 };
 
+export type AvailabilityBadgeVariant = "available" | "limited" | "full";
+
+export type AvailabilityBadgeProps = {
+  variant: AvailabilityBadgeVariant;
+  label?: string;
+  capacity?: number;
+  className?: string;
+};
+
+export type DashboardCardProps = {
+  title: string;
+  description: string;
+  href: string;
+};
+

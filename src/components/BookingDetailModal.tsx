@@ -1,18 +1,9 @@
 "use client";
 import Modal from "@/components/Modal";
 import OrderSummaryCard from "@/components/OrderSummaryCard";
-import type { Booking } from "@/lib/types/bookings";
+import type { BookingDetailModalProps } from "@/lib/types/bookings";
 
-type Props = {
-  open: boolean;
-  booking: Booking | null;
-  onClose: () => void;
-  onCancel?: (b: Booking) => void;
-  onReschedule?: (b: Booking) => void;
-  className?: string;
-};
-
-export default function BookingDetailModal({ open, booking, onClose, onCancel, onReschedule, className = "" }: Props) {
+export default function BookingDetailModal({ open, booking, onClose, onCancel, onReschedule, className = "" }: BookingDetailModalProps) {
   if (!open || !booking) return null;
   const items = booking.items.map((i) => ({ slug: i.slug, name: i.name, price: i.price }));
   const quantities = booking.items.reduce<Record<string, number>>((acc, i) => { acc[i.slug] = i.qty; return acc; }, {});
@@ -38,4 +29,3 @@ export default function BookingDetailModal({ open, booking, onClose, onCancel, o
     </Modal>
   );
 }
-

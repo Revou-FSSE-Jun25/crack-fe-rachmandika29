@@ -13,20 +13,7 @@ import { useSearchField } from "@/lib/hooks/useSearchField";
 import { useCategoryFilter } from "@/lib/hooks/useCategoryFilter";
 import { useDebouncedValue } from "@/lib/hooks/useDebouncedValue";
 import { useWizardSteps } from "@/lib/hooks/useWizardSteps";
-
-type MenuItem = {
-  id: number;
-  slug: string;
-  name: string;
-  description: string;
-  price: number;
-  image: string;
-  category: string;
-  tags: string[];
-  popularity: number;
-};
-
-type Quantities = Record<string, number>;
+import type { MenuItem, Quantities } from "@/lib/types/menu";
 
 export default function MenuComposer() {
   const router = useRouter();
