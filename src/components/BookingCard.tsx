@@ -18,8 +18,8 @@ export default function BookingCard({ booking, onViewDetails, onCancel, onResche
   const subtotal = typeof booking.subtotal === "number" ? booking.subtotal : booking.items.reduce((sum, i) => sum + i.price * i.qty, 0);
   return (
     <div className={`rounded-md border border-white/10 bg-zinc-900/50 p-3 sm:p-4 ${className}`} role="listitem" aria-label={`${booking.dateIso} ${booking.time}`}>
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
           <Badge status={booking.status} />
           <div className="text-sm font-medium">{booking.dateIso}</div>
           <div className="text-sm text-zinc-300">{booking.time}</div>
@@ -27,14 +27,14 @@ export default function BookingCard({ booking, onViewDetails, onCancel, onResche
         </div>
         <div className="text-sm">Rp {subtotal.toLocaleString()}</div>
       </div>
-      <div className="mt-3 flex items-center justify-between">
-        <div className="flex items-center gap-2 text-xs text-zinc-400">
+      <div className="mt-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-zinc-400">
           {booking.items.slice(0, 3).map((i) => (
             <span key={i.slug}>{i.name} × {i.qty}</span>
           ))}
           {booking.items.length > 3 && <span>+{booking.items.length - 3} more</span>}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <button type="button" className="rounded-md border border-white/20 px-3 py-1.5 text-sm hover:bg-white/10" onClick={() => onViewDetails(booking)}>View Details</button>
           {onReschedule && <button type="button" className="rounded-md border border-white/20 px-3 py-1.5 text-sm hover:bg-white/10" onClick={() => onReschedule(booking)}>Reschedule</button>}
           {onCancel && <button type="button" className="rounded-md bg-red-600 text-white px-3 py-1.5 text-sm" onClick={() => onCancel(booking)}>Cancel</button>}
@@ -43,4 +43,3 @@ export default function BookingCard({ booking, onViewDetails, onCancel, onResche
     </div>
   );
 }
-
