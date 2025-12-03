@@ -1,7 +1,7 @@
 "use client";
-import { useRef } from "react";
+import { useRef, useCallback } from "react";
 import { signInSchema } from "@/lib/validation/authSchemas";
-import { useZodForm } from "@/lib/hooks/useZodForm";
+import { useZodFormValidation } from "@/lib/hooks/useZodFormValidation";
 import { useAuthRequest } from "@/lib/hooks/useAuthRequest";
 import { useRedirectAfterAuth } from "@/lib/hooks/useRedirectAfterAuth";
 import { useFocusOnError } from "@/lib/hooks/useFocusOnError";
@@ -12,10 +12,25 @@ export default function SignIn({ role = "user" }: Props) {
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
 
-  const { values, setValue, errors, validate } = useZodForm(signInSchema, {
+  const { values, setValue, errors, setErrors } = useZodFormValidation(signInSchema, {
     email: "",
     password: "",
   });
+
+  const validate = useCallback(() => {
+    const result = signInSchema.safeParse(values);
+    if (result.success) {
+      setErrors({});
+      return true;
+    }
+    const next: Record<string, string | undefined> = {};
+    for (const issue of result.error.issues) {
+      const k = (issue.path[0] as string) || "";
+      if (!next[k]) next[k] = issue.message;
+    }
+    setErrors(next);
+    return false;
+  }, [values, setErrors]);
 
   const { submit, pending, serverError, clearError } = useAuthRequest("/api/auth/signin");
   const { focusFirstInvalid } = useFocusOnError({ email: emailRef, password: passwordRef });
