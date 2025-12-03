@@ -13,7 +13,7 @@ export default function Home() {
           <DashboardCard
             title="Schedule & Seating"
             description="Manage seating capacity and time slots"
-            href="/admin/schedule"
+            href="/admin/manage-availibility"
           />
           <DashboardCard
             title="Menu Availability"
