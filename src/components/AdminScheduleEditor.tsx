@@ -6,20 +6,48 @@ import { useZodFormValidation } from "@/lib/hooks/useZodFormValidation";
 
 export default function AdminScheduleEditor({ dateIso, slots, onCreateSlot, onUpdateSlot, onDeleteSlot, onSave, pending = false, error = null, className = "" }: AdminScheduleEditorProps) {
   const addDefault = () => {
-    const t = "18:00";
+    const t = "06:00 PM";
     onCreateSlot({ time: t, available: true, capacity: 6 });
   };
 
   const schema = z.object({
     slots: z.array(
       z.object({
-        time: z.string().regex(/^\d{2}:\d{2}$/ , "Invalid time"),
-        capacity: z.number().min(0, "Capacity must be at least 0").optional(),
+        time: z.string().regex(/^(0?[1-9]|1[0-2]):[0-5][0-9]\s?(AM|PM)$/i , "Invalid time (hh:mm AM/PM)"),
+        capacity: z.number().min(2, "Capacity must be at least 2").max(30, "Capacity must be at most 30").optional(),
       })
     ),
   });
 
   const { values, setValue, errors, attempted, submit } = useZodFormValidation(schema, { slots });
+
+  const normalizeTime12h = (raw: string) => {
+    const v = raw.toUpperCase().replace(/\s+/g, " ").trim();
+    const m = v.match(/^(\d{1,2}):(\d{2})\s?(AM|PM)$/);
+    if (!m) return raw;
+    const hh = parseInt(m[1], 10);
+    if (hh < 1 || hh > 12) return raw;
+    const mm = m[2];
+    const suf = m[3];
+    const hhPad = String(hh).padStart(2, "0");
+    return `${hhPad}:${mm} ${suf}`;
+  };
+
+  const timeOptions12h = (() => {
+    const out: string[] = [];
+    for (let h = 18; h <= 22; h++) {
+      for (const m of [0, 30]) {
+        const hour12 = h % 12 === 0 ? 12 : h % 12;
+        const hh = String(hour12).padStart(2, "0");
+        const mm = String(m).padStart(2, "0");
+        out.push(`${hh}:${mm} PM`);
+      }
+    }
+    out.push("11:00 PM");
+    return out;
+  })();
+
+  const capacityOptions = Array.from({ length: 29 }, (_, i) => i + 2);
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,18 +76,24 @@ export default function AdminScheduleEditor({ dateIso, slots, onCreateSlot, onUp
           <div key={`${s.time}-${idx}`} className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <AvailabilityBadge variant={Number(s.capacity) > 0 ? "available" : "full"} label={Number(s.capacity) > 0 ? "Available" : "Full"} capacity={s.capacity} />
-              <input
-                type="text"
-                value={s.time}
+              <select
+                value={normalizeTime12h(s.time)}
                 onChange={(e) => onUpdateSlot(idx, { time: e.target.value })}
-                className="w-24 rounded-md bg-black border border-white/20 px-2 py-1 text-white"
-              />
-              <input
-                type="number"
+                className="w-32 rounded-md bg-black border border-white/20 px-2 py-1 text-white"
+              >
+                {timeOptions12h.map((t) => (
+                  <option key={t} value={t}>{t}</option>
+                ))}
+              </select>
+              <select
                 value={typeof s.capacity === "number" ? s.capacity : 0}
-                onChange={(e) => onUpdateSlot(idx, { capacity: Math.max(0, Number(e.target.value)) })}
+                onChange={(e) => onUpdateSlot(idx, { capacity: Number(e.target.value) })}
                 className="w-24 rounded-md bg-black border border-white/20 px-2 py-1 text-white"
-              />
+              >
+                {capacityOptions.map((n) => (
+                  <option key={n} value={n}>{n}</option>
+                ))}
+              </select>
             </div>
             <div className="flex items-center gap-2">
               <button type="button" className="rounded-md border border-white/20 px-3 py-1.5 text-sm hover:bg-white/10" onClick={() => onDeleteSlot(idx)}>Delete</button>
