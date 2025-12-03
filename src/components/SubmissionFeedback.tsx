@@ -1,16 +1,7 @@
 "use client";
+import type { SubmissionFeedbackProps } from "@/lib/types/ui";
 
-type Kind = "success" | "error" | "info";
-
-type Props = {
-  open: boolean;
-  kind: Kind;
-  message: string;
-  onClose?: () => void;
-  className?: string;
-};
-
-export default function SubmissionFeedback({ open, kind, message, onClose, className = "" }: Props) {
+export default function SubmissionFeedback({ open, kind, message, onClose, className = "" }: SubmissionFeedbackProps) {
   if (!open) return null;
   const theme = kind === "success" ? "border-green-400 bg-green-600/20 text-green-200" : kind === "error" ? "border-red-400 bg-red-600/20 text-red-200" : "border-blue-400 bg-blue-600/20 text-blue-200";
   return (

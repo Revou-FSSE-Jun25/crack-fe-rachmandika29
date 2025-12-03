@@ -1,27 +1,8 @@
 "use client";
 import Link from "next/link";
+import type { MenuCardProps } from "@/lib/types/menu";
 
-type MenuItem = {
-  id: number;
-  slug: string;
-  name: string;
-  description: string;
-  price: number;
-  image: string;
-  category: string;
-  tags: string[];
-  popularity: number;
-};
-
-type Props = {
-  item: MenuItem;
-  quantity: number;
-  onAdd: () => void;
-  onIncrement: () => void;
-  onDecrement: () => void;
-};
-
-export default function MenuCard({ item, quantity, onAdd, onIncrement, onDecrement }: Props) {
+export default function MenuCard({ item, quantity, onAdd, onIncrement, onDecrement }: MenuCardProps) {
   return (
     <div className="h-full flex flex-col rounded-md border border-white/10 bg-zinc-900/50 overflow-hidden">
       <Link href={`/dashboard/menu/${item.slug}`} className="block flex-1">

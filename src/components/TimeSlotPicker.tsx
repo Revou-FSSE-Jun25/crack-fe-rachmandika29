@@ -1,20 +1,8 @@
 "use client";
 import { useMemo } from "react";
+import type { TimeSlotPickerProps } from "@/lib/types/reservation";
 
-type Slot = {
-  time: string;
-  available: boolean;
-  capacity?: number;
-};
-
-type Props = {
-  slots: Slot[];
-  selected?: string | null;
-  onSelect: (time: string) => void;
-  className?: string;
-};
-
-export default function TimeSlotPicker({ slots, selected = null, onSelect, className = "" }: Props) {
+export default function TimeSlotPicker({ slots, selected = null, onSelect, className = "" }: TimeSlotPickerProps) {
   const list = useMemo(() => slots, [slots]);
   return (
     <div className={`rounded-md border border-white/10 bg-zinc-900/50 ${className}`}>

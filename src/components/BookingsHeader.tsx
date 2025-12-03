@@ -1,13 +1,7 @@
 "use client";
+import type { BookingsHeaderProps } from "@/lib/types/bookings";
 
-type Props = {
-  title?: string;
-  description?: string;
-  className?: string;
-  action?: React.ReactNode;
-};
-
-export default function BookingsHeader({ title = "Bookings", description = "Your upcoming reservations", className = "", action }: Props) {
+export default function BookingsHeader({ title = "Bookings", description = "Your upcoming reservations", className = "", action }: BookingsHeaderProps) {
   return (
     <div className={`space-y-2 ${className}`}>
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">

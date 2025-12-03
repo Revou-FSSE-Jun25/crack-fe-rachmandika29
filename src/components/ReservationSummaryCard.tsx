@@ -1,15 +1,7 @@
 "use client";
+import type { ReservationSummaryCardProps } from "@/lib/types/reservation";
 
-type Props = {
-  dateIso: string | null;
-  time: string | null;
-  guests: number;
-  onSubmit: () => void;
-  disabled?: boolean;
-  className?: string;
-};
-
-export default function ReservationSummaryCard({ dateIso, time, guests, onSubmit, disabled = false, className = "" }: Props) {
+export default function ReservationSummaryCard({ dateIso, time, guests, onSubmit, disabled = false, className = "" }: ReservationSummaryCardProps) {
   const ready = Boolean(dateIso && time && guests > 0) && !disabled;
   return (
     <div className={`rounded-md border border-white/10 bg-zinc-900/50 p-3 sm:p-4 ${className}`}>

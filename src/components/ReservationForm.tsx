@@ -2,22 +2,9 @@
 import { useRef } from "react";
 import { z } from "zod";
 import { useZodFormValidation } from "@/lib/hooks/useZodFormValidation";
+import type { ReservationValues, ReservationFormProps } from "@/lib/types/reservation";
 
-type Values = {
-  name: string;
-  email: string;
-  phone: string;
-  notes?: string;
-};
-
-type Props = {
-  initial?: Partial<Values>;
-  onSubmit: (values: Values) => void;
-  pending?: boolean;
-  className?: string;
-};
-
-export default function ReservationForm({ initial, onSubmit, pending = false, className = "" }: Props) {
+export default function ReservationForm({ initial, onSubmit, pending = false, className = "" }: ReservationFormProps) {
   const nameRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
   const phoneRef = useRef<HTMLInputElement>(null);
@@ -33,7 +20,7 @@ export default function ReservationForm({ initial, onSubmit, pending = false, cl
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const res = submit((vals) => onSubmit(vals as Values));
+    const res = submit((vals) => onSubmit(vals as ReservationValues));
     if (!res.ok) {
       if (res.firstErrorKey === "name" && nameRef.current) nameRef.current.focus();
       else if (res.firstErrorKey === "email" && emailRef.current) emailRef.current.focus();

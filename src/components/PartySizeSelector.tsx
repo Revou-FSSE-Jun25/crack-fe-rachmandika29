@@ -1,14 +1,7 @@
 "use client";
+import type { PartySizeSelectorProps } from "@/lib/types/reservation";
 
-type Props = {
-  value: number;
-  onChange: (n: number) => void;
-  min?: number;
-  max?: number;
-  className?: string;
-};
-
-export default function PartySizeSelector({ value, onChange, min = 1, max = 20, className = "" }: Props) {
+export default function PartySizeSelector({ value, onChange, min = 1, max = 20, className = "" }: PartySizeSelectorProps) {
   const dec = () => onChange(Math.max(min, value - 1));
   const inc = () => onChange(Math.min(max, value + 1));
   return (

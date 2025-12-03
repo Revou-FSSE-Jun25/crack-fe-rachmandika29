@@ -1,23 +1,7 @@
 "use client";
+import type { OrderSummaryProps } from "@/lib/types/menu";
 
-type MenuItem = {
-  slug: string;
-  name: string;
-  price: number;
-  image?: string;
-};
-
-type Quantities = Record<string, number>;
-
-type Props = {
-  items: MenuItem[];
-  quantities: Quantities;
-  onIncrement: (slug: string) => void;
-  onDecrement: (slug: string) => void;
-  className?: string;
-};
-
-export default function OrderSummaryCard({ items, quantities, onIncrement, onDecrement, className = "" }: Props) {
+export default function OrderSummaryCard({ items, quantities, onIncrement, onDecrement, className = "" }: OrderSummaryProps) {
   const selected = items.filter((i) => (quantities[i.slug] ?? 0) > 0);
   const subtotal = selected.reduce((sum, i) => sum + i.price * (quantities[i.slug] ?? 0), 0);
 

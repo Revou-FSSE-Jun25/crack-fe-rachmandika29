@@ -1,16 +1,8 @@
 "use client";
 import { useMemo } from "react";
+import type { SearchBarProps } from "@/lib/types/menu";
 
-type Props = {
-  value: string;
-  onChange: (v: string) => void;
-  onClear: () => void;
-  categories?: string[];
-  selectedCategory?: string | null;
-  onSelectCategory?: (c: string | null) => void;
-};
-
-export default function SearchBar({ value, onChange, onClear, categories = [], selectedCategory = null, onSelectCategory }: Props) {
+export default function SearchBar({ value, onChange, onClear, categories = [], selectedCategory = null, onSelectCategory }: SearchBarProps) {
   const hasQuery = value.length > 0;
   const chips = useMemo(() => categories, [categories]);
 

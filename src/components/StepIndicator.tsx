@@ -1,14 +1,7 @@
 "use client";
+import type { Step, StepIndicatorProps } from "@/lib/types/ui";
 
-type Step = { label: string };
-
-type Props = {
-  steps: Step[];
-  current: number;
-  className?: string;
-};
-
-export default function StepIndicator({ steps, current, className = "" }: Props) {
+export default function StepIndicator({ steps, current, className = "" }: StepIndicatorProps) {
   return (
     <div className={`flex items-center gap-2 sm:gap-3 flex-wrap sm:flex-nowrap overflow-x-auto ${className}`} aria-label="progress">
       {steps.map((s, i) => {

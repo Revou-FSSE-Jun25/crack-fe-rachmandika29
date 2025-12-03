@@ -1,14 +1,7 @@
 "use client";
+import type { StepSectionProps } from "@/lib/types/ui";
 
-type Props = {
-  title: string;
-  description?: string;
-  children: React.ReactNode;
-  footer?: React.ReactNode;
-  className?: string;
-};
-
-export default function StepSection({ title, description, children, footer, className = "" }: Props) {
+export default function StepSection({ title, description, children, footer, className = "" }: StepSectionProps) {
   return (
     <section className={`rounded-md border border-white/10 bg-zinc-900/50 p-3 sm:p-4 ${className}`} role="region" aria-labelledby={title.replace(/\s+/g, "-").toLowerCase()}>
       <div className="space-y-1">

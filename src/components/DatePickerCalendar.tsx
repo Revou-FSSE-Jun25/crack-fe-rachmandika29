@@ -1,15 +1,7 @@
 "use client";
 import { useMemo } from "react";
 import { useCalendarMonth } from "@/lib/hooks/useCalendarMonth";
-
-type Props = {
-  availableDates?: string[];
-  selected?: string | null;
-  onSelect: (dateIso: string) => void;
-  initialMonth?: Date;
-  onMonthChange?: (monthStartIso: string) => void;
-  className?: string;
-};
+import type { DatePickerCalendarProps } from "@/lib/types/reservation";
 
 function toIso(d: Date) {
   const y = d.getFullYear();
@@ -20,7 +12,7 @@ function toIso(d: Date) {
 
 const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-export default function DatePickerCalendar({ availableDates = [], selected = null, onSelect, initialMonth, onMonthChange, className = "" }: Props) {
+export default function DatePickerCalendar({ availableDates = [], selected = null, onSelect, initialMonth, onMonthChange, className = "" }: DatePickerCalendarProps) {
   const { month, monthLabel, leading, days, prev, next } = useCalendarMonth({ initialMonth, onMonthChange });
   const availableSet = useMemo(() => new Set(availableDates), [availableDates]);
 

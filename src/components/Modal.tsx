@@ -1,16 +1,8 @@
 "use client";
 import { useEscapeToClose } from "@/lib/hooks/useEscapeToClose";
+import type { ModalProps } from "@/lib/types/ui";
 
-type Props = {
-  open: boolean;
-  onClose: () => void;
-  title?: string;
-  children: React.ReactNode;
-  footer?: React.ReactNode;
-  className?: string;
-};
-
-export default function Modal({ open, onClose, title, children, footer, className = "" }: Props) {
+export default function Modal({ open, onClose, title, children, footer, className = "" }: ModalProps) {
   useEscapeToClose(open, onClose);
 
   if (!open) return null;
