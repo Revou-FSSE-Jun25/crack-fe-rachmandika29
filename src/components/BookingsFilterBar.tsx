@@ -1,22 +1,9 @@
 "use client";
 import { useDebouncedValue } from "@/lib/hooks/useDebouncedValue";
 import { useEffect, useMemo, useState } from "react";
+import type { BookingsFilterBarProps, BookingsFilterStatus } from "@/lib/types/bookings";
 
-type Status = "all" | "upcoming" | "confirmed" | "cancelled";
-
-type Props = {
-  status: Status;
-  onStatusChange: (s: Status) => void;
-  search: string;
-  onSearchChange: (v: string) => void;
-  startDate?: string | null;
-  endDate?: string | null;
-  onStartDateChange?: (v: string | null) => void;
-  onEndDateChange?: (v: string | null) => void;
-  className?: string;
-};
-
-export default function BookingsFilterBar({ status, onStatusChange, search, onSearchChange, startDate, endDate, onStartDateChange, onEndDateChange, className = "" }: Props) {
+export default function BookingsFilterBar({ status, onStatusChange, search, onSearchChange, startDate, endDate, onStartDateChange, onEndDateChange, className = "" }: BookingsFilterBarProps) {
   const [localSearch, setLocalSearch] = useState<string>(search);
   const debounced = useDebouncedValue(localSearch, 200);
 
@@ -42,7 +29,7 @@ export default function BookingsFilterBar({ status, onStatusChange, search, onSe
           <label className="text-sm">Status</label>
           <select
             value={status}
-            onChange={(e) => onStatusChange(e.target.value as Status)}
+            onChange={(e) => onStatusChange(e.target.value as BookingsFilterStatus)}
             className="w-full sm:w-auto rounded-md bg-black border border-white/20 px-2 py-1 text-white"
           >
             {statuses.map((s) => (
