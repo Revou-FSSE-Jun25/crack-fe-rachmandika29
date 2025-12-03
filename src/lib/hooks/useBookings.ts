@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
 import type { Booking } from "@/lib/types/bookings";
+import menuData from "@/data/menu.json";
+import type { MenuItem } from "@/lib/types/menu";
 
 export function useBookings(opts: { endpoint?: string; email?: string } = {}) {
   const [data, setData] = useState<Booking[]>([]);
@@ -22,6 +24,10 @@ export function useBookings(opts: { endpoint?: string; email?: string } = {}) {
           const list: Booking[] = Array.isArray(json) ? json : Array.isArray(json?.bookings) ? json.bookings : [];
           if (!cancelled) setData(list);
         } else {
+          const menuItems = menuData as MenuItem[];
+          const m1 = menuItems[0];
+          const m2 = menuItems[1] || menuItems[0];
+          const m3 = menuItems[2] || menuItems[0];
           const mock: Booking[] = [
             {
               id: "b-1001",
@@ -31,8 +37,8 @@ export function useBookings(opts: { endpoint?: string; email?: string } = {}) {
               guests: 2,
               status: "upcoming",
               items: [
-                { slug: "nasi-goreng", name: "Nasi Goreng", price: 35000, qty: 1 },
-                { slug: "es-teh", name: "Es Teh", price: 8000, qty: 2 },
+                { slug: m1.slug, name: m1.name, price: m1.price, qty: 1 },
+                { slug: m2.slug, name: m2.name, price: m2.price, qty: 2 },
               ],
               notes: "Window seat",
             },
@@ -44,8 +50,8 @@ export function useBookings(opts: { endpoint?: string; email?: string } = {}) {
               guests: 4,
               status: "confirmed",
               items: [
-                { slug: "sate-ayam", name: "Sate Ayam", price: 45000, qty: 3 },
-                { slug: "jus-mangga", name: "Jus Mangga", price: 15000, qty: 2 },
+                { slug: m2.slug, name: m2.name, price: m2.price, qty: 3 },
+                { slug: m3.slug, name: m3.name, price: m3.price, qty: 2 },
               ],
             },
           ];
