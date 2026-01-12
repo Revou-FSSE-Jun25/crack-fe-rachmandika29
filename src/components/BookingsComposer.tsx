@@ -1,5 +1,5 @@
 "use client";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import BookingsHeader from "@/components/BookingsHeader";
 import BookingsFilterBar from "@/components/BookingsFilterBar";
@@ -18,8 +18,23 @@ export default function BookingsComposer() {
   const [endDate, setEndDate] = useState<string | null>(null);
   const [detailOpen, setDetailOpen] = useState<boolean>(false);
   const [selected, setSelected] = useState<Booking | null>(null);
+  const [email, setEmail] = useState<string | null>(null);
 
-  const { data, loading, error, refresh } = useBookings();
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      try {
+        const res = await fetch("/api/auth/status", { cache: "no-store", credentials: "include" });
+        const json = await res.json();
+        if (active) setEmail(json?.email || null);
+      } catch {
+        if (active) setEmail(null);
+      }
+    })();
+    return () => { active = false; };
+  }, []);
+
+  const { data, loading, error, refresh } = useBookings({ endpoint: "/api/bookings", email: email || undefined });
   const cancelReq = useAuthRequest("/api/bookings/cancel");
   const rescheduleReq = useAuthRequest("/api/bookings/reschedule");
 
