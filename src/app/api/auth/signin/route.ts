@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { signInSchema } from "@/lib/validation/authSchemas";
-import users from "@/data/users.json";
-type User = { id: number; name: string; email: string; password: string };
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "https://be.dahar.services";
 
 const roleSchema = z.object({ role: z.enum(["user", "admin"]).optional() });
 
@@ -18,15 +17,26 @@ export async function POST(request: Request) {
     const roleParsed = roleSchema.safeParse(body);
     const role = roleParsed.success && roleParsed.data.role ? roleParsed.data.role : "user";
 
-    const list: User[] = role === "admin" ? (users.admins as User[]) : (users.clients as User[]);
-    const found = list.find((u) => u.email.toLowerCase() === parsed.data.email.toLowerCase());
-    if (!found || found.password !== parsed.data.password) {
-      return NextResponse.json({ ok: false, error: "Invalid credentials" }, { status: 401 });
+    const upstream = await fetch(`${API_BASE}/auth/signin`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: parsed.data.email, password: parsed.data.password }),
+    });
+    let upstreamJson: any = null;
+    try {
+      upstreamJson = await upstream.json();
+    } catch {
+      upstreamJson = null;
     }
-    const tokenPayload = `${role}:${found.email}`;
+    if (!upstream.ok || (upstreamJson && upstreamJson.ok === false)) {
+      const errMsg = upstreamJson?.error || upstreamJson?.message || "Invalid credentials";
+      return NextResponse.json({ ok: false, error: errMsg }, { status: upstream.status || 401 });
+    }
+
+    const tokenPayload = `${role}:${parsed.data.email}`;
     const token = Buffer.from(tokenPayload).toString("base64");
 
-    const res = NextResponse.json({ ok: true });
+    const res = NextResponse.json(upstreamJson ?? { ok: true });
     res.cookies.set("auth_token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
