@@ -1,9 +1,9 @@
-import { NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "https://be.dahar.services";
 
-export async function PATCH(request: Request, { params }: { params: { id: string } }) {
+export async function PATCH(request: NextRequest, context: { params: Promise<{ id: string }> }) {
   try {
-    const id = params.id;
+    const { id } = await context.params;
     const body = await request.json().catch(() => ({}));
     const res = await fetch(`${API_BASE}/menu/admin/menu/${encodeURIComponent(id)}`, {
       method: "PATCH",
@@ -19,4 +19,3 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
 }
-
