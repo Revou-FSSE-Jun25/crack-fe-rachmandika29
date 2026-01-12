@@ -1,42 +1,43 @@
-import { useEffect, useMemo, useState } from "react";
-import data from "@/data/menu.json";
+import { useEffect, useState } from "react";
 import type { MenuItem } from "@/lib/types/menu";
 
 export function useAdminMenuAvailability() {
-  const baseItems = useMemo(() => data as MenuItem[], []);
-  const [customItems, setCustomItems] = useState<MenuItem[]>(() => {
-    try {
-      const raw = typeof window !== "undefined" ? localStorage.getItem("admin_menu_custom_items") : null;
-      const parsed = raw ? JSON.parse(raw) : null;
-      if (Array.isArray(parsed)) return parsed as MenuItem[];
-    } catch {}
-    return [];
-  });
-  const items = useMemo(() => [...baseItems, ...customItems], [baseItems, customItems]);
-  const [availability, setAvailability] = useState<Record<string, boolean>>(() => {
-    try {
-      const raw = typeof window !== "undefined" ? localStorage.getItem("admin_menu_availability") : null;
-      const parsed = raw ? JSON.parse(raw) : null;
-      if (parsed && typeof parsed === "object") return parsed as Record<string, boolean>;
-    } catch {}
-    const initial: Record<string, boolean> = {};
-    for (const i of [...baseItems]) initial[i.slug] = true;
-    return initial;
-  });
+  const [items, setItems] = useState<MenuItem[]>([]);
+  const [availability, setAvailability] = useState<Record<string, boolean>>({});
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    try {
-      localStorage.setItem("admin_menu_availability", JSON.stringify(availability));
-    } catch {}
-  }, [availability]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem("admin_menu_custom_items", JSON.stringify(customItems));
-    } catch {}
-  }, [customItems]);
+    let cancelled = false;
+    async function run() {
+      setPending(true);
+      setError(null);
+      try {
+        const res = await fetch("/api/menu/admin/menu", { cache: "no-store" });
+        if (!res.ok) throw new Error(`status ${res.status}`);
+        const json = await res.json();
+        const list: any[] = Array.isArray(json) ? json : Array.isArray(json?.items) ? json.items : [];
+        const nextItems = list as MenuItem[];
+        const nextAvailability: Record<string, boolean> = {};
+        for (const it of nextItems) {
+          const a = typeof (it as any).available === "boolean" ? (it as any).available : true;
+          nextAvailability[it.slug] = a;
+        }
+        if (!cancelled) {
+          setItems(nextItems);
+          setAvailability(nextAvailability);
+        }
+      } catch (e: any) {
+        if (!cancelled) setError(e?.message || "error");
+      } finally {
+        if (!cancelled) setPending(false);
+      }
+    }
+    run();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const setAvailable = (slug: string, v: boolean) => {
     setAvailability((prev) => ({ ...prev, [slug]: v }));
@@ -54,19 +55,43 @@ export function useAdminMenuAvailability() {
     setPending(true);
     setError(null);
     try {
-      await new Promise((r) => setTimeout(r, 500));
+      const updates = items.map((it) => {
+        const available = availability[it.slug] !== false;
+        return fetch(`/api/menu/admin/menu/${it.id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ available }),
+        });
+      });
+      await Promise.all(updates);
     } catch (e: any) {
       setError(e?.message || "error");
+      throw e;
     } finally {
       setPending(false);
     }
   };
 
-  const createItem = (item: Omit<MenuItem, "id">) => {
-    const nextId = Math.max(0, ...items.map((i) => i.id)) + 1;
-    const full: MenuItem = { id: nextId, ...item } as MenuItem;
-    setCustomItems((prev) => [...prev, full]);
-    setAvailability((prev) => ({ ...prev, [full.slug]: true }));
+  const createItem = async (item: Omit<MenuItem, "id">) => {
+    setPending(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/menu/admin/menu", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(item),
+      });
+      if (!res.ok) throw new Error(`status ${res.status}`);
+      const json = await res.json();
+      const created = json as MenuItem;
+      setItems((prev) => [...prev, created]);
+      setAvailability((prev) => ({ ...prev, [created.slug]: true }));
+    } catch (e: any) {
+      setError(e?.message || "error");
+      throw e;
+    } finally {
+      setPending(false);
+    }
   };
 
   return { items, availability, setAvailable, bulkSet, save, pending, error, createItem };

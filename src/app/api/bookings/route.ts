@@ -19,3 +19,18 @@ export async function POST(request: Request) {
   }
 }
 
+export async function GET(request: Request) {
+  try {
+    const url = new URL(request.url);
+    const email = url.searchParams.get("email");
+    const qs = email ? `?email=${encodeURIComponent(email)}` : "";
+    const res = await fetch(`${API_BASE}/bookings${qs}`, { method: "GET" });
+    const json = await res.json().catch(() => null);
+    if (!res.ok) {
+      return NextResponse.json(json ?? { error: "Failed to fetch bookings" }, { status: res.status || 400 });
+    }
+    return NextResponse.json(json ?? [], { status: res.status });
+  } catch {
+    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+  }
+}
