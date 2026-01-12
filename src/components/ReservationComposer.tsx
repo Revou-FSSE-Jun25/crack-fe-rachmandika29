@@ -14,6 +14,7 @@ import { useWizardSteps } from "@/lib/hooks/useWizardSteps";
 import { useAvailableDates } from "@/lib/hooks/useAvailableDates";
 import { useTimeSlotsForDate } from "@/lib/hooks/useTimeSlotsForDate";
 import type { Slot } from "@/lib/types/reservation";
+import { useAuthRequest } from "@/lib/hooks/useAuthRequest";
 
 export default function ReservationComposer() {
   const router = useRouter();
@@ -33,9 +34,11 @@ export default function ReservationComposer() {
   const [formValues, setFormValues] = useState<{ name: string; email: string; phone: string; notes?: string } | null>(null);
   const [openSuccessModal, setOpenSuccessModal] = useState<boolean>(false);
 
-  const { data: availableDates } = useAvailableDates({ days: 21 });
+  const { data: availableDates } = useAvailableDates({ days: 21, endpoint: "/api/availability/available-dates" });
 
-  const { data: slots } = useTimeSlotsForDate(dateIso);
+  const { data: slots } = useTimeSlotsForDate(dateIso, { endpoint: "/api/availability/slots" });
+
+  const bookingReq = useAuthRequest("/api/bookings");
 
   const handleSubmit = async (values: { name: string; email: string; phone: string; notes?: string }) => {
     if (!dateIso || !time || guests <= 0) {
@@ -44,8 +47,18 @@ export default function ReservationComposer() {
     }
     setPending(true);
     try {
-      await new Promise((r) => setTimeout(r, 600));
-      setOpenSuccessModal(true);
+      const res = await bookingReq.submit({
+        dateIso,
+        time,
+        guests,
+        contact: { name: values.name, email: values.email, phone: values.phone },
+        notes: values.notes,
+      });
+      if (res.ok) {
+        setOpenSuccessModal(true);
+      } else {
+        setFeedback({ open: true, kind: "error", message: "Failed to submit reservation." });
+      }
     } catch {
       setFeedback({ open: true, kind: "error", message: "Failed to submit reservation." });
     } finally {
