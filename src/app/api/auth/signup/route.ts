@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "https://be.dahar.services";
 
 // Server-side signup payload (confirm handled client-side)
 const serverSignUpSchema = z.object({
@@ -16,12 +17,26 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: false, error: msg }, { status: 400 });
     }
 
-  
-    // Auto-login the user after sign up by issuing an auth cookie.
+    const upstream = await fetch(`${API_BASE}/auth/signup`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: parsed.data.email, password: parsed.data.password }),
+    });
+    let upstreamJson: any = null;
+    try {
+      upstreamJson = await upstream.json();
+    } catch {
+      upstreamJson = null;
+    }
+    if (!upstream.ok || (upstreamJson && upstreamJson.ok === false)) {
+      const errMsg = upstreamJson?.error || upstreamJson?.message || "Signup failed";
+      return NextResponse.json({ ok: false, error: errMsg }, { status: upstream.status || 400 });
+    }
+
     const tokenPayload = `user:${parsed.data.email}`;
     const token = Buffer.from(tokenPayload).toString("base64");
 
-    const res = NextResponse.json({ ok: true });
+    const res = NextResponse.json(upstreamJson ?? { ok: true });
     res.cookies.set("auth_token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
