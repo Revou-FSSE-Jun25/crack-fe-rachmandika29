@@ -51,8 +51,9 @@ export function useRescheduleRequests(opts: { endpoint?: string } = {}) {
       setLoading(true);
       setError(null);
       try {
-        if (opts.endpoint) {
-          const res = await fetch(opts.endpoint);
+        const endpoint = opts.endpoint ?? "/api/reschedules";
+        if (endpoint) {
+          const res = await fetch(endpoint, { cache: "no-store" });
           if (!res.ok) throw new Error(`status ${res.status}`);
           const json = await res.json();
           const list: RescheduleRequest[] = Array.isArray(json) ? json : Array.isArray(json?.requests) ? json.requests : [];
@@ -77,7 +78,12 @@ export function useRescheduleRequests(opts: { endpoint?: string } = {}) {
   const accept = async (id: string, dateIso: string, time: string, note?: string) => {
     setPending(true);
     try {
-      await new Promise((r) => setTimeout(r, 400));
+      const res = await fetch(`/api/reschedules/${encodeURIComponent(id)}/accept`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ dateIso, time, note }),
+      });
+      if (!res.ok) throw new Error(`status ${res.status}`);
       updateStatus(id, "accepted", { requestedDateIso: dateIso, requestedTime: time, adminNote: note });
       return { ok: true };
     } catch {
@@ -90,7 +96,12 @@ export function useRescheduleRequests(opts: { endpoint?: string } = {}) {
   const reject = async (id: string, reason: string) => {
     setPending(true);
     try {
-      await new Promise((r) => setTimeout(r, 300));
+      const res = await fetch(`/api/reschedules/${encodeURIComponent(id)}/reject`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reason }),
+      });
+      if (!res.ok) throw new Error(`status ${res.status}`);
       updateStatus(id, "rejected", { adminNote: reason });
       return { ok: true };
     } catch {
@@ -102,4 +113,3 @@ export function useRescheduleRequests(opts: { endpoint?: string } = {}) {
 
   return { requests, loading, error, refresh, accept, reject, pending };
 }
-
