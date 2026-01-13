@@ -44,6 +44,22 @@ export async function POST(request: Request) {
       path: "/",
       maxAge: 60 * 60 * 24, // 1 day
     });
+    const upstreamToken =
+      (typeof upstreamJson?.token === "string" && upstreamJson.token) ||
+      (typeof upstreamJson?.accessToken === "string" && upstreamJson.accessToken) ||
+      (typeof upstreamJson?.access_token === "string" && upstreamJson.access_token) ||
+      (typeof upstreamJson?.jwt === "string" && upstreamJson.jwt) ||
+      (typeof upstreamJson?.data?.token === "string" && upstreamJson.data.token) ||
+      null;
+    if (upstreamToken) {
+      res.cookies.set("upstream_bearer", upstreamToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
+        maxAge: 60 * 30, // 30 minutes
+      });
+    }
     return res;
   } catch (err) {
     return NextResponse.json({ ok: false, error: "Invalid request" }, { status: 400 });

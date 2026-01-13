@@ -35,7 +35,7 @@ export function useAdminSlotsMap() {
     setPending(true);
     setError(null);
     try {
-      const url = `/api/availability/slots?date=${encodeURIComponent(dateIso)}`;
+      const url = `/api/availability/admin/slots?date=${encodeURIComponent(dateIso)}`;
       const res = await fetch(url, { method: "GET" });
       if (!res.ok) throw new Error(`status ${res.status}`);
       const json = await res.json();
