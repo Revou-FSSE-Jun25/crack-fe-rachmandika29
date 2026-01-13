@@ -20,19 +20,24 @@ function parseAuthToken(token?: string | null): { authenticated: boolean; role: 
 export async function GET() {
   const cookieStore = await cookies();
   const token = cookieStore.get("auth_token")?.value ?? null;
+  const bearer = cookieStore.get("upstream_bearer")?.value ?? null;
   const local = parseAuthToken(token);
+  if (!local.authenticated) {
+    return NextResponse.json(local);
+  }
   try {
-    const res = await fetch(`${API_BASE}/auth/status`, { method: "GET" });
-    let json: any = null;
-    try {
-      json = await res.json();
-    } catch {
-      json = null;
-    }
+    const headers: Record<string, string> = {};
+    if (bearer) headers["Authorization"] = `Bearer ${bearer}`;
+    const res = await fetch(`${API_BASE}/auth/status`, { method: "GET", headers, cache: "no-store" });
+    const json = await res.json().catch(() => null);
     if (res.ok && json) {
-      const authenticated = typeof json.authenticated === "boolean" ? json.authenticated : Boolean(json.user);
-      const email = typeof json.email === "string" ? json.email : (json.user && typeof json.user.email === "string" ? json.user.email : local.email);
-      return NextResponse.json({ authenticated, role: local.role, email });
+      const email =
+        typeof json.email === "string"
+          ? json.email
+          : json.user && typeof json.user.email === "string"
+          ? json.user.email
+          : local.email;
+      return NextResponse.json({ authenticated: true, role: local.role, email });
     }
   } catch {}
   return NextResponse.json(local);
