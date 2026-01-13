@@ -60,8 +60,13 @@ export default function BookingsComposer() {
     }
   };
 
-  const onReschedule = (b: Booking) => {
-    router.push(`/dashboard/reservation?date=${encodeURIComponent(b.dateIso)}&time=${encodeURIComponent(b.time)}&guests=${b.guests}`);
+  const onReschedule = async (b: Booking) => {
+    const res = await rescheduleReq.submit({ id: b.id, dateIso: b.dateIso, time: b.time });
+    if (res.ok) {
+      refresh();
+    } else {
+      router.push(`/dashboard/reservation?date=${encodeURIComponent(b.dateIso)}&time=${encodeURIComponent(b.time)}&guests=${b.guests}`);
+    }
   };
 
   return (

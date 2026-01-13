@@ -8,7 +8,7 @@ import { useRescheduleRequests } from "@/lib/hooks/useRescheduleRequests";
 import AdminToolbar from "@/components/AdminToolbar";
 
 export default function Home() {
-  const { requests, loading, error, refresh, accept, reject, pending } = useRescheduleRequests();
+  const { requests, loading, error, refresh, accept, reject, pending } = useRescheduleRequests({ endpoint: "/api/reschedules" });
   const [feedback, setFeedback] = useState<{ open: boolean; kind: "success" | "error" | "info"; message: string }>({ open: false, kind: "info", message: "" });
   const [rejectDialog, setRejectDialog] = useState<{ open: boolean; id: string | null }>({ open: false, id: null });
   const [decision, setDecision] = useState<{ open: boolean; id: string | null }>({ open: false, id: null });
