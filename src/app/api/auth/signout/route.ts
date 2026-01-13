@@ -7,5 +7,6 @@ export async function POST() {
   } catch {}
   const res = NextResponse.json({ ok: true });
   res.cookies.delete("auth_token");
+  res.cookies.delete("upstream_bearer");
   return res;
 }
