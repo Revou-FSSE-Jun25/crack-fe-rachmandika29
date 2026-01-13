@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import AdminToolbar from "@/components/AdminToolbar";
 import AdminScheduleEditor from "@/components/AdminScheduleEditor";
 import AdminFeedback from "@/components/AdminFeedback";
@@ -16,9 +16,9 @@ export default function Home() {
   const [pending, setPending] = useState<boolean>(false);
   const [feedback, setFeedback] = useState<{ open: boolean; kind: "success" | "error" | "info"; message: string }>({ open: false, kind: "info", message: "" });
   const [confirm, setConfirm] = useState<{ open: boolean; idx: number }>({ open: false, idx: -1 });
-  const { slots: getSlots, create, update, remove, save } = useAdminSlotsMap();
+  const { slots: getSlots, create, update, remove, load, save } = useAdminSlotsMap();
 
-  const { data: availableDates, refresh } = useAvailableDates({ days: 21 });
+  const { data: availableDates, refresh } = useAvailableDates({ days: 21, endpoint: "/api/availability/available-dates" });
 
   const filteredDates = useMemo(() => {
     return availableDates.filter((iso) => {
@@ -30,6 +30,12 @@ export default function Home() {
 
   const slots = getSlots(selectedDate);
   const visibleSlots = slots;
+
+  useEffect(() => {
+    if (selectedDate) {
+      load(selectedDate).catch(() => {});
+    }
+  }, [selectedDate, load]);
 
   const onCreateSlot = (slot: Slot) => {
     if (!selectedDate) return;

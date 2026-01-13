@@ -31,14 +31,16 @@ export function useAdminSlotsMap() {
     });
   };
 
-  const save = async (dateIso: string, override?: Slot[]) => {
+  const load = async (dateIso: string) => {
     setPending(true);
     setError(null);
     try {
-      if (override) {
-        setMap((prev) => ({ ...prev, [dateIso]: override }));
-      }
-      await new Promise((r) => setTimeout(r, 500));
+      const url = `/api/availability/slots?date=${encodeURIComponent(dateIso)}`;
+      const res = await fetch(url, { method: "GET" });
+      if (!res.ok) throw new Error(`status ${res.status}`);
+      const json = await res.json();
+      const list: Slot[] = Array.isArray(json) ? json : Array.isArray(json?.slots) ? json.slots : [];
+      setMap((prev) => ({ ...prev, [dateIso]: list }));
     } catch (e: any) {
       setError(e?.message || "error");
       throw e;
@@ -47,6 +49,27 @@ export function useAdminSlotsMap() {
     }
   };
 
-  return { slots, create, update, remove, save, pending, error };
-}
+  const save = async (dateIso: string, override?: Slot[]) => {
+    setPending(true);
+    setError(null);
+    try {
+      const payload = { date: dateIso, slots: override ?? (map[dateIso] || []) };
+      const res = await fetch("/api/availability/admin/slots", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error(`status ${res.status}`);
+      if (override) {
+        setMap((prev) => ({ ...prev, [dateIso]: override }));
+      }
+    } catch (e: any) {
+      setError(e?.message || "error");
+      throw e;
+    } finally {
+      setPending(false);
+    }
+  };
 
+  return { slots, create, update, remove, load, save, pending, error };
+}
