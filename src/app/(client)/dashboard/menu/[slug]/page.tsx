@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import data from "@/data/menu.json";
 
 type MenuItem = {
   id: number;
@@ -15,7 +14,26 @@ type MenuItem = {
 
 export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const items = data as MenuItem[];
+  const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "https://be.dahar.services";
+  let items: MenuItem[] = [];
+  try {
+    const res = await fetch(`${API_BASE}/menu`, { method: "GET", cache: "no-store" });
+    const json = await res.json().catch(() => null);
+    const listSource = Array.isArray(json) ? json : Array.isArray(json?.items) ? json.items : [];
+    items = (listSource as any[]).map((raw) => {
+      const id = typeof raw?.id === "number" ? raw.id : Number(raw?.id ?? 0);
+      const name = String(raw?.name ?? "");
+      const description = String(raw?.description ?? "");
+      const price = typeof raw?.price === "number" ? raw.price : Number(raw?.price ?? 0);
+      const image = String(raw?.image ?? "");
+      const category = String(raw?.category ?? "Uncategorized");
+      const tags = Array.isArray(raw?.tags) ? raw.tags.map((t: any) => String(t)) : [];
+      const popularity = typeof raw?.popularity === "number" ? raw.popularity : 0;
+      const slugSource = raw?.slug ?? (name || `item-${id || Date.now()}`);
+      const s = String(slugSource);
+      return { id, slug: s, name, description, price, image, category, tags, popularity };
+    });
+  } catch {}
   const key = decodeURIComponent(slug).trim().toLowerCase();
   const item = items.find((i) => i.slug.trim().toLowerCase() === key);
   if (!item) return notFound();

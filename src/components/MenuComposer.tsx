@@ -8,7 +8,6 @@ import StepIndicator from "@/components/StepIndicator";
 import StepSection from "@/components/StepSection";
 import Modal from "@/components/Modal";
 import OrderSummaryCard from "@/components/OrderSummaryCard";
-import data from "@/data/menu.json";
 import { useSearchField } from "@/lib/hooks/useSearchField";
 import { useCategoryFilter } from "@/lib/hooks/useCategoryFilter";
 import { useDebouncedValue } from "@/lib/hooks/useDebouncedValue";
@@ -17,7 +16,28 @@ import type { MenuItem, Quantities } from "@/lib/types/menu";
 
 export default function MenuComposer() {
   const router = useRouter();
-  const items = data as MenuItem[];
+  const [items, setItems] = useState<MenuItem[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    async function run() {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await fetch("/api/menu", { cache: "no-store" });
+        if (!res.ok) throw new Error(`status ${res.status}`);
+        const json = await res.json().catch(() => []);
+        if (!cancelled) setItems(Array.isArray(json) ? json : []);
+      } catch (e: any) {
+        if (!cancelled) setError(e?.message || "Failed to load menu");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+    run();
+    return () => { cancelled = true; };
+  }, []);
   const categories = useMemo(() => Array.from(new Set(items.map((i) => i.category))), [items]);
   const search = useSearchField("");
   const { selectedCategory, setSelectedCategory, chips } = useCategoryFilter(categories, null);
@@ -148,8 +168,10 @@ export default function MenuComposer() {
               </select>
             </div>
 
-            <MenuGrid>
-              {filtered.map((item) => {
+              <MenuGrid>
+              {error && <div className="col-span-full text-center text-sm text-red-400">{error}</div>}
+              {loading && <div className="col-span-full text-center text-sm text-zinc-400">Loading menu…</div>}
+              {!loading && filtered.map((item) => {
                 const qty = quantities[item.slug] ?? 0;
                 return (
                   <MenuCard
@@ -162,7 +184,7 @@ export default function MenuComposer() {
                   />
                 );
               })}
-              {filtered.length === 0 && (
+              {!loading && filtered.length === 0 && (
                 <div className="col-span-full text-center text-sm text-zinc-400">No menus match your search</div>
               )}
             </MenuGrid>
