@@ -28,8 +28,46 @@ export default function MenuComposer() {
         const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "https://be.dahar.services";
         const res = await fetch(`${API_BASE}/menu`, { cache: "no-store" });
         if (!res.ok) throw new Error(`status ${res.status}`);
-        const json = await res.json().catch(() => []);
-        if (!cancelled) setItems(Array.isArray(json) ? json : []);
+        const json = await res.json().catch(() => null);
+        const listSource = Array.isArray(json) ? json : Array.isArray(json?.items) ? json.items : [];
+        const mapped = (listSource as any[]).map((raw) => {
+          const id = typeof raw?.id === "number" ? raw.id : Number(raw?.id ?? 0);
+          const name = String(raw?.name ?? "");
+          const description = String(raw?.description ?? "");
+          const price = typeof raw?.price === "number" ? raw.price : Number(raw?.price ?? 0);
+          const image =
+            typeof raw?.image === "string"
+              ? raw.image
+              : typeof raw?.image?.url === "string"
+              ? raw.image.url
+              : String(raw?.image ?? "");
+          const category =
+            typeof raw?.category === "string"
+              ? raw.category
+              : typeof raw?.category?.name === "string"
+              ? raw.category.name
+              : typeof raw?.category?.title === "string"
+              ? raw.category.title
+              : String(raw?.category ?? "Uncategorized");
+          const tags = Array.isArray(raw?.tags)
+            ? raw.tags.map((t: any) =>
+                typeof t === "string"
+                  ? t
+                  : typeof t?.name === "string"
+                  ? t.name
+                  : typeof t?.tag?.name === "string"
+                  ? t.tag.name
+                  : typeof t?.label === "string"
+                  ? t.label
+                  : String(t)
+              )
+            : [];
+          const popularity = typeof raw?.popularity === "number" ? raw.popularity : 0;
+          const slugSource = raw?.slug ?? (name || `item-${id || Date.now()}`);
+          const slug = String(slugSource);
+          return { id, slug, name, description, price, image, category, tags, popularity };
+        });
+        if (!cancelled) setItems(mapped);
       } catch (e: any) {
         if (!cancelled) setError(e?.message || "Failed to load menu");
       } finally {
