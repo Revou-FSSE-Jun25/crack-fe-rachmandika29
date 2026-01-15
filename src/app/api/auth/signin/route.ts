@@ -42,9 +42,10 @@ export async function POST(request: Request) {
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
-      maxAge: 60 * 60 * 24, // 1 day
+      maxAge: 60 * 60 * 24,
     });
-    const upstreamToken =
+
+    let upstreamToken =
       (typeof upstreamJson?.token === "string" && upstreamJson.token) ||
       (typeof upstreamJson?.accessToken === "string" && upstreamJson.accessToken) ||
       (typeof upstreamJson?.access_token === "string" && upstreamJson.access_token) ||
@@ -53,31 +54,36 @@ export async function POST(request: Request) {
       (typeof upstreamJson?.data?.accessToken === "string" && upstreamJson.data.accessToken) ||
       (typeof upstreamJson?.data?.access_token === "string" && upstreamJson.data.access_token) ||
       null;
+
+    const setCookieHeader =
+      upstream.headers.get("set-cookie") ||
+      upstream.headers.get("Set-Cookie") ||
+      null;
+    if (setCookieHeader) {
+      const authMatch = setCookieHeader.match(/auth_token=([^;]+)/);
+      if (authMatch) {
+        const jwt = authMatch[1];
+        res.cookies.set("upstream_cookie", `auth_token=${jwt}`, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "lax",
+          path: "/",
+          maxAge: 60 * 30,
+        });
+        if (!upstreamToken) {
+          upstreamToken = jwt;
+        }
+      }
+    }
+
     if (upstreamToken) {
       res.cookies.set("upstream_bearer", upstreamToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
         path: "/",
-        maxAge: 60 * 30, // 30 minutes
+        maxAge: 60 * 30,
       });
-    }
-    const setCookieHeader =
-      upstream.headers.get("set-cookie") ||
-      upstream.headers.get("Set-Cookie") ||
-      null;
-    if (setCookieHeader) {
-      const match = setCookieHeader.match(/^\s*([^=;,\s]+=[^;]+)/);
-      const nv = match ? match[1] : null;
-      if (nv) {
-        res.cookies.set("upstream_cookie", nv, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "lax",
-          path: "/",
-          maxAge: 60 * 30, // 30 minutes
-        });
-      }
     }
     return res;
   } catch (err) {

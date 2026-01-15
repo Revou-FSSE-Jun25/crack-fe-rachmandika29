@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "https://be.dahar.services";
 
 type RawMenuItem = any;
@@ -19,7 +20,16 @@ function mapMenuItem(raw: RawMenuItem) {
 
 export async function GET() {
   try {
-    const res = await fetch(`${API_BASE}/menu`, { method: "GET" });
+    const cookieStore = await cookies();
+    const bearer = cookieStore.get("upstream_bearer")?.value ?? null;
+    const upstreamCookie = cookieStore.get("upstream_cookie")?.value ?? null;
+    const headers: Record<string, string> = {};
+    if (upstreamCookie) {
+      headers["Cookie"] = upstreamCookie;
+    } else if (bearer) {
+      headers["Authorization"] = `Bearer ${bearer}`;
+    }
+    const res = await fetch(`${API_BASE}/menu`, { method: "GET", headers, cache: "no-store" });
     const json = await res.json().catch(() => null);
     const listSource = Array.isArray(json) ? json : Array.isArray(json?.items) ? json.items : [];
     const items = (listSource as RawMenuItem[]).map(mapMenuItem);
