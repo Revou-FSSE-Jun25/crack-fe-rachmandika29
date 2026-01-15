@@ -14,10 +14,9 @@ type MenuItem = {
 
 export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "https://be.dahar.services";
   let items: MenuItem[] = [];
   try {
-    const res = await fetch(`${API_BASE}/menu`, { method: "GET", cache: "no-store" });
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/api/menu`, { method: "GET", cache: "no-store" });
     const json = await res.json().catch(() => null);
     const listSource = Array.isArray(json) ? json : Array.isArray(json?.items) ? json.items : [];
     items = (listSource as any[]).map((raw) => {

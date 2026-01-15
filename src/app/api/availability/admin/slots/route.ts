@@ -22,6 +22,9 @@ export async function GET(request: Request) {
     }
     const res = await fetch(`${API_BASE}/availability/admin/slots${suffix}`, { method: "GET", headers });
     const json = await res.json().catch(() => null);
+    if (!res.ok) {
+      return NextResponse.json(json ?? { error: "Failed to fetch admin slots" }, { status: res.status || 400 });
+    }
     return NextResponse.json(json ?? [], { status: res.status });
   } catch {
     return NextResponse.json({ error: "Failed to fetch admin slots" }, { status: 502 });

@@ -9,9 +9,33 @@ function mapMenuItem(raw: RawMenuItem) {
   const name = String(raw?.name ?? "");
   const description = String(raw?.description ?? "");
   const price = typeof raw?.price === "number" ? raw.price : Number(raw?.price ?? 0);
-  const image = String(raw?.image ?? "");
-  const category = String(raw?.category ?? "Uncategorized");
-  const tags = Array.isArray(raw?.tags) ? raw.tags.map((t: any) => String(t)) : [];
+  const image =
+    typeof raw?.image === "string"
+      ? raw.image
+      : typeof raw?.image?.url === "string"
+      ? raw.image.url
+      : String(raw?.image ?? "");
+  const category =
+    typeof raw?.category === "string"
+      ? raw.category
+      : typeof raw?.category?.name === "string"
+      ? raw.category.name
+      : typeof raw?.category?.title === "string"
+      ? raw.category.title
+      : String(raw?.category ?? "Uncategorized");
+  const tags = Array.isArray(raw?.tags)
+    ? raw.tags.map((t: any) =>
+        typeof t === "string"
+          ? t
+          : typeof t?.name === "string"
+          ? t.name
+          : typeof t?.tag?.name === "string"
+          ? t.tag.name
+          : typeof t?.label === "string"
+          ? t.label
+          : String(t)
+      )
+    : [];
   const popularity = typeof raw?.popularity === "number" ? raw.popularity : 0;
   const slugSource = (raw?.slug ?? (name || `item-${id || Date.now()}`));
   const slug = String(slugSource);

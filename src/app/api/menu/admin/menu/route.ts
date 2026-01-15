@@ -15,6 +15,9 @@ export async function GET() {
     }
     const res = await fetch(`${API_BASE}/menu/admin/menu`, { method: "GET", headers, cache: "no-store" });
     const json = await res.json().catch(() => null);
+    if (!res.ok) {
+      return NextResponse.json(json ?? { error: "Failed to fetch admin menu" }, { status: res.status || 400 });
+    }
     return NextResponse.json(json ?? [], { status: res.status });
   } catch {
     return NextResponse.json({ error: "Failed to fetch admin menu" }, { status: 502 });
