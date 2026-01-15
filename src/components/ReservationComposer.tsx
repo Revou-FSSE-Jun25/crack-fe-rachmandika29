@@ -34,9 +34,9 @@ export default function ReservationComposer() {
   const [formValues, setFormValues] = useState<{ name: string; email: string; phone: string; notes?: string } | null>(null);
   const [openSuccessModal, setOpenSuccessModal] = useState<boolean>(false);
 
-  const { data: availableDates } = useAvailableDates({ days: 21, endpoint: "/api/availability/available-dates" });
+  const { data: availableDates } = useAvailableDates({ days: 21, endpoint: `${process.env.NEXT_PUBLIC_API_BASE_URL ?? "https://be.dahar.services"}/availability/available-dates` });
 
-  const { data: slots } = useTimeSlotsForDate(dateIso, { endpoint: "/api/availability/slots" });
+  const { data: slots } = useTimeSlotsForDate(dateIso, { endpoint: `${process.env.NEXT_PUBLIC_API_BASE_URL ?? "https://be.dahar.services"}/availability/slots` });
 
   const bookingReq = useAuthRequest("/api/bookings");
 

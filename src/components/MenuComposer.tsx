@@ -25,7 +25,8 @@ export default function MenuComposer() {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch("/api/menu", { cache: "no-store" });
+        const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "https://be.dahar.services";
+        const res = await fetch(`${API_BASE}/menu`, { cache: "no-store" });
         if (!res.ok) throw new Error(`status ${res.status}`);
         const json = await res.json().catch(() => []);
         if (!cancelled) setItems(Array.isArray(json) ? json : []);

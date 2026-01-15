@@ -10,10 +10,10 @@ import type { RescheduleDecisionModalProps } from "@/lib/types/bookings";
 
 export default function RescheduleDecisionModal({ open, request, onConfirm, onCancel, className = "" }: RescheduleDecisionModalProps) {
   if (!open || !request) return null;
-  const { data: availableDates } = useAvailableDates({ days: 30, endpoint: "/api/availability/available-dates" });
+  const { data: availableDates } = useAvailableDates({ days: 30, endpoint: `${process.env.NEXT_PUBLIC_API_BASE_URL ?? "https://be.dahar.services"}/availability/available-dates` });
   const schema = z.object({ dateIso: z.string().min(1, "Select a date"), time: z.string().min(1, "Select a time"), note: z.string().optional() });
   const { values, setValue, errors, attempted, submit } = useZodFormValidation(schema, { dateIso: request.requestedDateIso, time: request.requestedTime, note: "" });
-  const { data: slots } = useTimeSlotsForDate(values.dateIso || null, { endpoint: "/api/availability/slots" });
+  const { data: slots } = useTimeSlotsForDate(values.dateIso || null, { endpoint: `${process.env.NEXT_PUBLIC_API_BASE_URL ?? "https://be.dahar.services"}/availability/slots` });
 
   const handleConfirm = () => {
     submit(() => onConfirm(values.dateIso, values.time, values.note));
