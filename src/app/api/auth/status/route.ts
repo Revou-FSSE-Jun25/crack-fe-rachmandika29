@@ -21,13 +21,18 @@ export async function GET() {
   const cookieStore = await cookies();
   const token = cookieStore.get("auth_token")?.value ?? null;
   const bearer = cookieStore.get("upstream_bearer")?.value ?? null;
+  const upstreamCookie = cookieStore.get("upstream_cookie")?.value ?? null;
   const local = parseAuthToken(token);
   if (!local.authenticated) {
     return NextResponse.json(local);
   }
   try {
     const headers: Record<string, string> = {};
-    if (bearer) headers["Authorization"] = `Bearer ${bearer}`;
+    if (upstreamCookie) {
+      headers["Cookie"] = upstreamCookie;
+    } else if (bearer) {
+      headers["Authorization"] = `Bearer ${bearer}`;
+    }
     const res = await fetch(`${API_BASE}/auth/status`, { method: "GET", headers, cache: "no-store" });
     const json = await res.json().catch(() => null);
     if (res.ok && json) {

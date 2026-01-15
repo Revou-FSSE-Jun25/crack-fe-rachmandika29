@@ -6,8 +6,13 @@ export async function GET() {
   try {
     const cookieStore = await cookies();
     const bearer = cookieStore.get("upstream_bearer")?.value ?? null;
+    const upstreamCookie = cookieStore.get("upstream_cookie")?.value ?? null;
     const headers: Record<string, string> = {};
-    if (bearer) headers["Authorization"] = `Bearer ${bearer}`;
+    if (upstreamCookie) {
+      headers["Cookie"] = upstreamCookie;
+    } else if (bearer) {
+      headers["Authorization"] = `Bearer ${bearer}`;
+    }
     const res = await fetch(`${API_BASE}/menu/admin/menu`, { method: "GET", headers, cache: "no-store" });
     const json = await res.json().catch(() => null);
     return NextResponse.json(json ?? [], { status: res.status });
@@ -21,8 +26,13 @@ export async function POST(request: Request) {
     const body = await request.json().catch(() => ({}));
     const cookieStore = await cookies();
     const bearer = cookieStore.get("upstream_bearer")?.value ?? null;
+    const upstreamCookie = cookieStore.get("upstream_cookie")?.value ?? null;
     const headers: Record<string, string> = { "Content-Type": "application/json" };
-    if (bearer) headers["Authorization"] = `Bearer ${bearer}`;
+    if (upstreamCookie) {
+      headers["Cookie"] = upstreamCookie;
+    } else if (bearer) {
+      headers["Authorization"] = `Bearer ${bearer}`;
+    }
     const upstream = await fetch(`${API_BASE}/menu/admin/menu`, {
       method: "POST",
       headers,

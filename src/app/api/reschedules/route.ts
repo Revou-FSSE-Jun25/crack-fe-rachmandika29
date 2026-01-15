@@ -11,8 +11,13 @@ export async function GET(request: Request) {
     const suffix = qs.length ? `?${qs.join("&")}` : "";
     const cookieStore = await cookies();
     const bearer = cookieStore.get("upstream_bearer")?.value ?? null;
+    const upstreamCookie = cookieStore.get("upstream_cookie")?.value ?? null;
     const headers: Record<string, string> = {};
-    if (bearer) headers["Authorization"] = `Bearer ${bearer}`;
+    if (upstreamCookie) {
+      headers["Cookie"] = upstreamCookie;
+    } else if (bearer) {
+      headers["Authorization"] = `Bearer ${bearer}`;
+    }
     const res = await fetch(`${API_BASE}/reschedules${suffix}`, { method: "GET", headers, cache: "no-store" });
     const json = await res.json().catch(() => null);
     return NextResponse.json(json ?? [], { status: res.status });

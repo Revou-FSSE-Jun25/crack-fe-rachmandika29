@@ -7,8 +7,13 @@ export async function POST(_request: NextRequest, context: { params: Promise<{ i
     const { id } = await context.params;
     const cookieStore = await cookies();
     const bearer = cookieStore.get("upstream_bearer")?.value ?? null;
+    const upstreamCookie = cookieStore.get("upstream_cookie")?.value ?? null;
     const headers: Record<string, string> = { "Content-Type": "application/json" };
-    if (bearer) headers["Authorization"] = `Bearer ${bearer}`;
+    if (upstreamCookie) {
+      headers["Cookie"] = upstreamCookie;
+    } else if (bearer) {
+      headers["Authorization"] = `Bearer ${bearer}`;
+    }
     const upstream = await fetch(`${API_BASE}/reschedules/${encodeURIComponent(id)}/reject`, {
       method: "POST",
       headers,

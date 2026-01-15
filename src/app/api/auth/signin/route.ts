@@ -62,6 +62,23 @@ export async function POST(request: Request) {
         maxAge: 60 * 30, // 30 minutes
       });
     }
+    const setCookieHeader =
+      upstream.headers.get("set-cookie") ||
+      upstream.headers.get("Set-Cookie") ||
+      null;
+    if (setCookieHeader) {
+      const match = setCookieHeader.match(/^\s*([^=;,\s]+=[^;]+)/);
+      const nv = match ? match[1] : null;
+      if (nv) {
+        res.cookies.set("upstream_cookie", nv, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "lax",
+          path: "/",
+          maxAge: 60 * 30, // 30 minutes
+        });
+      }
+    }
     return res;
   } catch (err) {
     return NextResponse.json({ ok: false, error: "Invalid request" }, { status: 400 });

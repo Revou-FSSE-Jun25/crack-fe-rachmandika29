@@ -8,8 +8,13 @@ export async function POST(request: NextRequest, context: { params: Promise<{ id
     const body = await request.json().catch(() => ({}));
     const cookieStore = await cookies();
     const bearer = cookieStore.get("upstream_bearer")?.value ?? null;
+    const upstreamCookie = cookieStore.get("upstream_cookie")?.value ?? null;
     const headers: Record<string, string> = { "Content-Type": "application/json" };
-    if (bearer) headers["Authorization"] = `Bearer ${bearer}`;
+    if (upstreamCookie) {
+      headers["Cookie"] = upstreamCookie;
+    } else if (bearer) {
+      headers["Authorization"] = `Bearer ${bearer}`;
+    }
     const upstream = await fetch(`${API_BASE}/reschedules/${encodeURIComponent(id)}/accept`, {
       method: "POST",
       headers,
@@ -24,4 +29,3 @@ export async function POST(request: NextRequest, context: { params: Promise<{ id
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
 }
-

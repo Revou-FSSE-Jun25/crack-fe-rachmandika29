@@ -12,8 +12,13 @@ export async function POST(request: Request) {
     const payload = { bookingId: id, dateIso, time, note: typeof body?.note === "string" ? body.note : undefined };
     const cookieStore = await cookies();
     const bearer = cookieStore.get("upstream_bearer")?.value ?? null;
+    const upstreamCookie = cookieStore.get("upstream_cookie")?.value ?? null;
     const headers: Record<string, string> = { "Content-Type": "application/json" };
-    if (bearer) headers["Authorization"] = `Bearer ${bearer}`;
+    if (upstreamCookie) {
+      headers["Cookie"] = upstreamCookie;
+    } else if (bearer) {
+      headers["Authorization"] = `Bearer ${bearer}`;
+    }
     const upstream = await fetch(`${API_BASE}/reschedules`, {
       method: "POST",
       headers,

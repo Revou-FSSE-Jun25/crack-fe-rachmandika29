@@ -9,8 +9,13 @@ export async function POST(request: Request) {
     if (!id) return NextResponse.json({ ok: false, error: "Invalid booking id" }, { status: 400 });
     const cookieStore = await cookies();
     const bearer = cookieStore.get("upstream_bearer")?.value ?? null;
+    const upstreamCookie = cookieStore.get("upstream_cookie")?.value ?? null;
     const headers: Record<string, string> = { "Content-Type": "application/json" };
-    if (bearer) headers["Authorization"] = `Bearer ${bearer}`;
+    if (upstreamCookie) {
+      headers["Cookie"] = upstreamCookie;
+    } else if (bearer) {
+      headers["Authorization"] = `Bearer ${bearer}`;
+    }
     const upstream = await fetch(`${API_BASE}/bookings/${encodeURIComponent(id)}/cancel`, {
       method: "POST",
       headers,

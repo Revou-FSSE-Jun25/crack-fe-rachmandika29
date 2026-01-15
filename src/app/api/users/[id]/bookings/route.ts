@@ -7,8 +7,13 @@ export async function GET(_request: NextRequest, context: { params: Promise<{ id
     const { id } = await context.params;
     const cookieStore = await cookies();
     const bearer = cookieStore.get("upstream_bearer")?.value ?? null;
+    const upstreamCookie = cookieStore.get("upstream_cookie")?.value ?? null;
     const headers: Record<string, string> = {};
-    if (bearer) headers["Authorization"] = `Bearer ${bearer}`;
+    if (upstreamCookie) {
+      headers["Cookie"] = upstreamCookie;
+    } else if (bearer) {
+      headers["Authorization"] = `Bearer ${bearer}`;
+    }
     const res = await fetch(`${API_BASE}/users/${encodeURIComponent(id)}/bookings`, { method: "GET", headers });
     const json = await res.json().catch(() => null);
     if (!res.ok) {
