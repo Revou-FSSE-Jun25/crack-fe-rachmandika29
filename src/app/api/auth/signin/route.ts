@@ -50,6 +50,8 @@ export async function POST(request: Request) {
       (typeof upstreamJson?.access_token === "string" && upstreamJson.access_token) ||
       (typeof upstreamJson?.jwt === "string" && upstreamJson.jwt) ||
       (typeof upstreamJson?.data?.token === "string" && upstreamJson.data.token) ||
+      (typeof upstreamJson?.data?.accessToken === "string" && upstreamJson.data.accessToken) ||
+      (typeof upstreamJson?.data?.access_token === "string" && upstreamJson.data.access_token) ||
       null;
     if (upstreamToken) {
       res.cookies.set("upstream_bearer", upstreamToken, {

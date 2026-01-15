@@ -13,7 +13,7 @@ import Modal from "@/components/Modal";
 import AdminMenuForm from "@/components/AdminMenuForm";
 
 export default function Home() {
-  const { items, availability, setAvailable, bulkSet, save, pending, error } = useAdminMenuAvailability();
+  const { items, availability, setAvailable, bulkSet, save, pending, error, createItem } = useAdminMenuAvailability();
   const categories = useMemo(() => Array.from(new Set(items.map((i) => i.category))), [items]);
   const search = useSearchField("");
   const { selectedCategory, setSelectedCategory, chips } = useCategoryFilter(categories, null);
@@ -46,8 +46,6 @@ export default function Home() {
     bulkSet(slugs, false);
     setConfirm({ open: false, action: null });
   };
-
-  const { createItem } = useAdminMenuAvailability();
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-black">

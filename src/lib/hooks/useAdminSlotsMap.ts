@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import type { Slot } from "@/lib/types/reservation";
 
 export function useAdminSlotsMap() {
@@ -31,23 +31,26 @@ export function useAdminSlotsMap() {
     });
   };
 
-  const load = async (dateIso: string) => {
-    setPending(true);
-    setError(null);
-    try {
-      const url = `/api/availability/admin/slots?date=${encodeURIComponent(dateIso)}`;
-      const res = await fetch(url, { method: "GET" });
-      if (!res.ok) throw new Error(`status ${res.status}`);
-      const json = await res.json();
-      const list: Slot[] = Array.isArray(json) ? json : Array.isArray(json?.slots) ? json.slots : [];
-      setMap((prev) => ({ ...prev, [dateIso]: list }));
-    } catch (e: any) {
-      setError(e?.message || "error");
-      throw e;
-    } finally {
-      setPending(false);
-    }
-  };
+  const load = useCallback(
+    async (dateIso: string) => {
+      setPending(true);
+      setError(null);
+      try {
+        const url = `/api/availability/admin/slots?date=${encodeURIComponent(dateIso)}`;
+        const res = await fetch(url, { method: "GET" });
+        if (!res.ok) throw new Error(`status ${res.status}`);
+        const json = await res.json();
+        const list: Slot[] = Array.isArray(json) ? json : Array.isArray(json?.slots) ? json.slots : [];
+        setMap((prev) => ({ ...prev, [dateIso]: list }));
+      } catch (e: any) {
+        setError(e?.message || "error");
+        throw e;
+      } finally {
+        setPending(false);
+      }
+    },
+    []
+  );
 
   const save = async (dateIso: string, override?: Slot[]) => {
     setPending(true);
