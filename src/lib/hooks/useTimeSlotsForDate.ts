@@ -26,7 +26,13 @@ export function useTimeSlotsForDate(dateIso: string | null, opts: Options = {}) 
           const res = await fetch(url);
           if (!res.ok) throw new Error(`status ${res.status}`);
           const json = await res.json();
-          const list: Slot[] = Array.isArray(json) ? json : Array.isArray(json?.slots) ? json.slots : [];
+          const list: Slot[] = Array.isArray(json)
+            ? json
+            : Array.isArray(json?.slots)
+            ? json.slots
+            : Array.isArray((json as any)?.data)
+            ? (json as any).data
+            : [];
           if (!cancelled) setData(list);
         } else {
           const base = ["18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00"];
