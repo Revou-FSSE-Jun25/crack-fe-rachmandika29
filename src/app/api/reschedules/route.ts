@@ -5,9 +5,11 @@ const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "https://be.dahar.servi
 export async function GET(request: Request) {
   try {
     const url = new URL(request.url);
-    const status = url.searchParams.get("status");
+    const from = url.searchParams.get("from");
+    const to = url.searchParams.get("to");
     const qs: string[] = [];
-    if (status) qs.push(`status=${encodeURIComponent(status)}`);
+    if (from) qs.push(`from=${encodeURIComponent(from)}`);
+    if (to) qs.push(`to=${encodeURIComponent(to)}`);
     const suffix = qs.length ? `?${qs.join("&")}` : "";
     const cookieStore = await cookies();
     const bearer = cookieStore.get("upstream_bearer")?.value ?? null;
@@ -18,7 +20,11 @@ export async function GET(request: Request) {
     } else if (bearer) {
       headers["Authorization"] = `Bearer ${bearer}`;
     }
-    const res = await fetch(`${API_BASE}/reschedules${suffix}`, { method: "GET", headers, cache: "no-store" });
+    const res = await fetch(`${API_BASE}/reschedules/admin/reschedules${suffix}`, {
+      method: "GET",
+      headers,
+      cache: "no-store",
+    });
     const json = await res.json().catch(() => null);
     return NextResponse.json(json ?? [], { status: res.status });
   } catch {

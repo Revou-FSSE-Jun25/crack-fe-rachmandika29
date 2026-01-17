@@ -5,11 +5,18 @@ const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "https://be.dahar.servi
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const id = typeof body?.id === "string" ? body.id : null;
+    const rawId = body?.id ?? body?.bookingId;
+    const idNum = typeof rawId === "string" || typeof rawId === "number" ? Number(rawId) : NaN;
     const dateIso = typeof body?.dateIso === "string" ? body.dateIso : null;
     const time = typeof body?.time === "string" ? body.time : null;
-    if (!id || !dateIso || !time) return NextResponse.json({ ok: false, error: "Invalid data" }, { status: 400 });
-    const payload = { bookingId: id, dateIso, time, note: typeof body?.note === "string" ? body.note : undefined };
+    if (!Number.isFinite(idNum) || idNum <= 0 || !dateIso || !time) {
+      return NextResponse.json({ ok: false, error: "Invalid data" }, { status: 400 });
+    }
+    const payload = {
+      bookingId: idNum,
+      requestedDate: dateIso,
+      requestedTime: time,
+    };
     const cookieStore = await cookies();
     const bearer = cookieStore.get("upstream_bearer")?.value ?? null;
     const upstreamCookie = cookieStore.get("upstream_cookie")?.value ?? null;
@@ -19,7 +26,7 @@ export async function POST(request: Request) {
     } else if (bearer) {
       headers["Authorization"] = `Bearer ${bearer}`;
     }
-    const upstream = await fetch(`${API_BASE}/reschedules`, {
+    const upstream = await fetch(`${API_BASE}/bookings/reschedule`, {
       method: "POST",
       headers,
       body: JSON.stringify(payload),
