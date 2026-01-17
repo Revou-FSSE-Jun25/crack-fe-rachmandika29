@@ -55,7 +55,13 @@ export async function GET() {
     }
     const res = await fetch(`${API_BASE}/menu`, { method: "GET", headers, cache: "no-store" });
     const json = await res.json().catch(() => null);
-    const listSource = Array.isArray(json) ? json : Array.isArray(json?.items) ? json.items : [];
+    const listSource = Array.isArray(json)
+      ? json
+      : Array.isArray(json?.items)
+      ? json.items
+      : Array.isArray((json as any)?.data)
+      ? (json as any).data
+      : [];
     const items = (listSource as RawMenuItem[]).map(mapMenuItem);
     return NextResponse.json(items, { status: res.status });
   } catch {
