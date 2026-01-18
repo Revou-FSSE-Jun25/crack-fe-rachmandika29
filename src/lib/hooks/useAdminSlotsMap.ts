@@ -40,7 +40,14 @@ export function useAdminSlotsMap() {
         const res = await fetch(url, { method: "GET" });
         if (!res.ok) throw new Error(`status ${res.status}`);
         const json = await res.json();
-        const list: Slot[] = Array.isArray(json) ? json : Array.isArray(json?.slots) ? json.slots : [];
+        const list: Slot[] =
+          Array.isArray(json)
+            ? json
+            : Array.isArray(json?.slots)
+            ? json.slots
+            : Array.isArray((json as any)?.data)
+            ? (json as any).data
+            : [];
         setMap((prev) => ({ ...prev, [dateIso]: list }));
       } catch (e: any) {
         setError(e?.message || "error");
