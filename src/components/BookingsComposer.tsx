@@ -8,12 +8,12 @@ import BookingDetailModal from "@/components/BookingDetailModal";
 import ClientRescheduleModal from "@/components/ClientRescheduleModal";
 import EmptyState from "@/components/EmptyState";
 import { useBookings } from "@/lib/hooks/useBookings";
-import type { Booking } from "@/lib/types/bookings";
+import type { Booking, BookingsFilterStatus } from "@/lib/types/bookings";
 import { useAuthRequest } from "@/lib/hooks/useAuthRequest";
 
 export default function BookingsComposer() {
   const router = useRouter();
-  const [status, setStatus] = useState<"all" | "upcoming" | "confirmed" | "cancelled">("all");
+  const [status, setStatus] = useState<BookingsFilterStatus>("all");
   const [search, setSearch] = useState<string>("");
   const [startDate, setStartDate] = useState<string | null>(null);
   const [endDate, setEndDate] = useState<string | null>(null);
