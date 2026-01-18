@@ -7,7 +7,7 @@ export default function Home() {
       <main className="w-full max-w-4xl p-6 space-y-6">
         <div className="space-y-2">
           <h1 className="text-2xl font-semibold">Admin Dashboard</h1>
-          <p className="text-sm text-zinc-400">Manage schedule, seating, menu availability, and reschedule requests</p>
+          <p className="text-sm text-zinc-400">Manage schedule, seating, menu availability, and manage schedule requests</p>
         </div>
         <MenuGrid>
           <DashboardCard
@@ -21,7 +21,7 @@ export default function Home() {
             href="/admin/manage-menu"
           />
           <DashboardCard
-            title="Reschedule Requests"
+            title="Manage Schedule"
             description="Review and confirm client reschedules"
             href="/admin/manage-status"
           />
