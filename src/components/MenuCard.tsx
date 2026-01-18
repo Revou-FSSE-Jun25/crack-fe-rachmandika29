@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import Link from "next/link";
 import type { MenuCardProps } from "@/lib/types/menu";
 
@@ -6,7 +7,17 @@ export default function MenuCard({ item, quantity, onAdd, onIncrement, onDecreme
   return (
     <div className="h-full flex flex-col rounded-md border border-white/10 bg-zinc-900/50 overflow-hidden">
       <Link href={`/dashboard/menu/${item.slug}`} className="block flex-1">
-        <div className="aspect-video bg-black/50" />
+        <div className="aspect-video bg-black/50 relative overflow-hidden">
+          {item.image ? (
+            <Image
+              src={item.image}
+              alt={item.name}
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              className="object-cover"
+            />
+          ) : null}
+        </div>
         <div className="p-4 space-y-2">
           <div className="flex items-center justify-between">
             <h3 className="font-semibold line-clamp-1">{item.name}</h3>

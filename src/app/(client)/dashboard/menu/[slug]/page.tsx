@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { notFound } from "next/navigation";
 
 type MenuItem = {
@@ -48,7 +49,17 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
     <div className="montserrat flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-black">
       <main className="w-full max-w-3xl p-6 space-y-6">
         <div className="rounded-md border border-white/10 bg-zinc-900/50 overflow-hidden">
-          <div className="aspect-video bg-black/50" />
+          <div className="aspect-video bg-black/50 relative overflow-hidden">
+            {item.image ? (
+              <Image
+                src={item.image}
+                alt={item.name}
+                fill
+                sizes="100vw"
+                className="object-cover"
+              />
+            ) : null}
+          </div>
           <div className="p-6 space-y-3">
             <div className="flex items-start justify-between gap-4">
               <h1 className="text-2xl font-semibold">{item.name}</h1>
