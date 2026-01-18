@@ -13,7 +13,14 @@ type Props = {
 };
 
 function Badge({ status }: { status: Booking["status"] }) {
-  const color = status === "upcoming" ? "bg-blue-500/20 text-blue-300 border-blue-400/40" : status === "confirmed" ? "bg-green-500/20 text-green-300 border-green-400/40" : "bg-red-500/20 text-red-300 border-red-400/40";
+  const color =
+    status === "upcoming"
+      ? "bg-blue-500/20 text-blue-300 border-blue-400/40"
+      : status === "confirmed"
+      ? "bg-green-500/20 text-green-300 border-green-400/40"
+      : status === "pending"
+      ? "bg-yellow-500/20 text-yellow-300 border-yellow-400/40"
+      : "bg-red-500/20 text-red-300 border-red-400/40";
   return <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs ${color}`}>{status}</span>;
 }
 

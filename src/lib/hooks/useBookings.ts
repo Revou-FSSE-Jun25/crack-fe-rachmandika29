@@ -32,7 +32,10 @@ export function useBookings(opts: { endpoint?: string; email?: string } = {}) {
           const list: Booking[] = rawList.map((raw) => {
             const statusRaw = String(raw.status ?? "").toLowerCase();
             const status: BookingStatus =
-              statusRaw === "upcoming" || statusRaw === "confirmed" || statusRaw === "cancelled"
+              statusRaw === "upcoming" ||
+              statusRaw === "confirmed" ||
+              statusRaw === "cancelled" ||
+              statusRaw === "pending"
                 ? statusRaw
                 : "upcoming";
             const items = Array.isArray(raw.items)

@@ -5,6 +5,7 @@ import BookingsHeader from "@/components/BookingsHeader";
 import BookingsFilterBar from "@/components/BookingsFilterBar";
 import UpcomingBookingsList from "@/components/UpcomingBookingsList";
 import BookingDetailModal from "@/components/BookingDetailModal";
+import ClientRescheduleModal from "@/components/ClientRescheduleModal";
 import EmptyState from "@/components/EmptyState";
 import { useBookings } from "@/lib/hooks/useBookings";
 import type { Booking } from "@/lib/types/bookings";
@@ -21,6 +22,8 @@ export default function BookingsComposer() {
   const [email, setEmail] = useState<string | null>(null);
   const [cancellingId, setCancellingId] = useState<string | null>(null);
   const [reschedulingId, setReschedulingId] = useState<string | null>(null);
+  const [rescheduleOpen, setRescheduleOpen] = useState<boolean>(false);
+  const [rescheduleTarget, setRescheduleTarget] = useState<Booking | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -64,15 +67,22 @@ export default function BookingsComposer() {
     setCancellingId(null);
   };
 
-  const onReschedule = async (b: Booking) => {
+  const onReschedule = (b: Booking) => {
+    setRescheduleTarget(b);
+    setRescheduleOpen(true);
+  };
+
+  const onConfirmReschedule = async (b: Booking, dateIso: string, time: string) => {
     setReschedulingId(b.id);
-    const res = await rescheduleReq.submit({ id: b.id, dateIso: b.dateIso, time: b.time });
+    const res = await rescheduleReq.submit({ id: b.id, dateIso, time });
     if (res.ok) {
       refresh();
     } else {
-      router.push(`/dashboard/reservation?date=${encodeURIComponent(b.dateIso)}&time=${encodeURIComponent(b.time)}&guests=${b.guests}`);
+      router.push(`/dashboard/reservation?date=${encodeURIComponent(dateIso)}&time=${encodeURIComponent(time)}&guests=${b.guests}`);
     }
     setReschedulingId(null);
+    setRescheduleOpen(false);
+    setRescheduleTarget(null);
   };
 
   return (
@@ -96,6 +106,8 @@ export default function BookingsComposer() {
           onViewDetails={onViewDetails}
           onCancel={onCancel}
           onReschedule={onReschedule}
+          cancellingId={cancellingId}
+          reschedulingId={reschedulingId}
           empty={<EmptyState title="No upcoming bookings" description="Start by creating a reservation and ordering from the menu." action={<button type="button" className="rounded-md bg-white text-black px-3 py-2 text-sm font-medium" onClick={() => router.push("/dashboard/reservation")}>Create Reservation</button>} />}
         />
         <BookingDetailModal
@@ -106,6 +118,17 @@ export default function BookingsComposer() {
           onReschedule={onReschedule}
           cancelling={selected ? cancellingId === selected.id : false}
           rescheduling={selected ? reschedulingId === selected.id : false}
+        />
+        <ClientRescheduleModal
+          key={rescheduleTarget?.id ?? "none"}
+          open={rescheduleOpen}
+          booking={rescheduleTarget}
+          onConfirm={onConfirmReschedule}
+          onClose={() => {
+            setRescheduleOpen(false);
+            setRescheduleTarget(null);
+          }}
+          submitting={rescheduleTarget ? reschedulingId === rescheduleTarget.id : false}
         />
       </main>
     </div>

@@ -39,7 +39,10 @@ export function useAdminBookings(opts: { endpoint?: string; from?: string | null
           const mapped: Booking[] = list.map((raw) => {
             const statusRaw = String(raw.status ?? "").toLowerCase();
             const status: BookingStatus =
-              statusRaw === "upcoming" || statusRaw === "confirmed" || statusRaw === "cancelled"
+              statusRaw === "upcoming" ||
+              statusRaw === "confirmed" ||
+              statusRaw === "cancelled" ||
+              statusRaw === "pending"
                 ? statusRaw
                 : "upcoming";
             return {

@@ -5,7 +5,7 @@ export type BookingItem = {
   qty: number;
 };
 
-export type BookingStatus = "upcoming" | "confirmed" | "cancelled";
+export type BookingStatus = "upcoming" | "confirmed" | "cancelled" | "pending";
 
 export type Booking = {
   id: string;
@@ -26,7 +26,7 @@ export type BookingsHeaderProps = {
   action?: React.ReactNode;
 };
 
-export type BookingsFilterStatus = "all" | "upcoming" | "confirmed" | "cancelled";
+export type BookingsFilterStatus = "all" | "upcoming" | "confirmed" | "cancelled" | "pending";
 
 export type BookingsFilterBarProps = {
   status: BookingsFilterStatus;

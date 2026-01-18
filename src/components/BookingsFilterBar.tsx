@@ -15,12 +15,17 @@ export default function BookingsFilterBar({ status, onStatusChange, search, onSe
     setLocalSearch(search);
   }, [search]);
 
-  const statuses = useMemo(() => ([
-    { value: "all", label: "All" },
-    { value: "upcoming", label: "Upcoming" },
-    { value: "confirmed", label: "Confirmed" },
-    { value: "cancelled", label: "Cancelled" },
-  ] as const), []);
+  const statuses = useMemo(
+    () =>
+      [
+        { value: "all", label: "All" },
+        { value: "upcoming", label: "Upcoming" },
+        { value: "confirmed", label: "Confirmed" },
+        { value: "pending", label: "Pending" },
+        { value: "cancelled", label: "Cancelled" },
+      ] as const,
+    [],
+  );
 
   return (
     <div className={`rounded-md border border-white/10 bg-zinc-900/50 p-3 sm:p-4 ${className}`}>
