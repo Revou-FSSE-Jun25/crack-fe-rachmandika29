@@ -28,7 +28,13 @@ export function useAvailableDates(opts: Options = {}) {
           const res = await fetch(endpoint);
           if (!res.ok) throw new Error(`status ${res.status}`);
           const json = await res.json();
-          const list: string[] = Array.isArray(json) ? json : Array.isArray(json?.dates) ? json.dates : [];
+          const list: string[] = Array.isArray(json?.data)
+            ? json.data
+            : Array.isArray(json?.dates)
+            ? json.dates
+            : Array.isArray(json)
+            ? json
+            : [];
           if (!cancelled) setData(list);
         } else {
           const list: string[] = [];

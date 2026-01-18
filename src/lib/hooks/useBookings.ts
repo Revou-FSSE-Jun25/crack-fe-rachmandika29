@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import type { Booking } from "@/lib/types/bookings";
+import type { Booking, BookingStatus } from "@/lib/types/bookings";
 import menuData from "@/data/menu.json";
 import type { MenuItem } from "@/lib/types/menu";
 
@@ -17,11 +17,53 @@ export function useBookings(opts: { endpoint?: string; email?: string } = {}) {
       setError(null);
       try {
         if (opts.endpoint) {
+          if (!opts.email) {
+            if (!cancelled) {
+              setData([]);
+              setLoading(false);
+            }
+            return;
+          }
           const url = opts.email ? `${opts.endpoint}?email=${encodeURIComponent(opts.email)}` : opts.endpoint;
           const res = await fetch(url);
           if (!res.ok) throw new Error(`status ${res.status}`);
           const json = await res.json();
-          const list: Booking[] = Array.isArray(json) ? json : Array.isArray(json?.bookings) ? json.bookings : [];
+          const rawList: any[] = Array.isArray(json) ? json : Array.isArray(json?.bookings) ? json.bookings : [];
+          const list: Booking[] = rawList.map((raw) => {
+            const statusRaw = String(raw.status ?? "").toLowerCase();
+            const status: BookingStatus =
+              statusRaw === "upcoming" || statusRaw === "confirmed" || statusRaw === "cancelled"
+                ? statusRaw
+                : "upcoming";
+            const items = Array.isArray(raw.items)
+              ? raw.items.map((it: any) => {
+                  const name = String(it.name ?? "");
+                  const baseSlug =
+                    typeof it.slug === "string" && it.slug.trim() !== ""
+                      ? it.slug
+                      : name || `item-${typeof it.id === "number" && Number.isFinite(it.id) ? it.id : Date.now()}`;
+                  const slug = baseSlug
+                    .toString()
+                    .toLowerCase()
+                    .replace(/[^a-z0-9]+/g, "-")
+                    .replace(/^-+|-+$/g, "");
+                  const price = Number(it.price ?? 0);
+                  const qty = Number(it.qty ?? it.quantity ?? 0);
+                  return { slug, name, price, qty };
+                })
+              : [];
+            return {
+              id: String(raw.id ?? ""),
+              email: String(raw.email ?? opts.email ?? ""),
+              dateIso: String(raw.dateIso ?? ""),
+              time: String(raw.time ?? ""),
+              guests: Number(raw.guests ?? 0),
+              status,
+              items,
+              notes: raw.notes ? String(raw.notes) : undefined,
+              subtotal: typeof raw.subtotal === "number" ? raw.subtotal : undefined,
+            };
+          });
           if (!cancelled) setData(list);
         } else {
           const menuItems = menuData as MenuItem[];
