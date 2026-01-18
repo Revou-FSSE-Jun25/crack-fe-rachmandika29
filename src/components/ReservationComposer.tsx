@@ -170,6 +170,7 @@ export default function ReservationComposer() {
             guests={guests}
             onSubmit={() => handleSubmit(formValues || { name: "", email: "", phone: "" })}
             disabled={pending}
+            loading={pending}
           />
         </StepSection>
       )}

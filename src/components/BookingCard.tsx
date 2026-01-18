@@ -1,11 +1,14 @@
 "use client";
 import type { Booking } from "@/lib/types/bookings";
+import Spinner from "@/components/Spinner";
 
 type Props = {
   booking: Booking;
   onViewDetails: (b: Booking) => void;
   onCancel?: (b: Booking) => void;
   onReschedule?: (b: Booking) => void;
+  cancelling?: boolean;
+  rescheduling?: boolean;
   className?: string;
 };
 
@@ -14,7 +17,7 @@ function Badge({ status }: { status: Booking["status"] }) {
   return <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs ${color}`}>{status}</span>;
 }
 
-export default function BookingCard({ booking, onViewDetails, onCancel, onReschedule, className = "" }: Props) {
+export default function BookingCard({ booking, onViewDetails, onCancel, onReschedule, cancelling = false, rescheduling = false, className = "" }: Props) {
   const subtotal = typeof booking.subtotal === "number" ? booking.subtotal : booking.items.reduce((sum, i) => sum + i.price * i.qty, 0);
   return (
     <div className={`rounded-md border border-white/10 bg-zinc-900/50 p-3 sm:p-4 ${className}`} role="listitem" aria-label={`${booking.dateIso} ${booking.time}`}>
@@ -36,8 +39,28 @@ export default function BookingCard({ booking, onViewDetails, onCancel, onResche
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <button type="button" className="rounded-md border border-white/20 px-3 py-1.5 text-sm hover:bg-white/10" onClick={() => onViewDetails(booking)}>View Details</button>
-          {onReschedule && <button type="button" className="rounded-md border border-white/20 px-3 py-1.5 text-sm hover:bg-white/10" onClick={() => onReschedule(booking)}>Reschedule</button>}
-          {onCancel && <button type="button" className="rounded-md bg-red-600 text-white px-3 py-1.5 text-sm" onClick={() => onCancel(booking)}>Cancel</button>}
+          {onReschedule && (
+            <button
+              type="button"
+              className="rounded-md border border-white/20 px-3 py-1.5 text-sm hover:bg-white/10 inline-flex items-center justify-center disabled:opacity-60"
+              onClick={() => onReschedule(booking)}
+              disabled={rescheduling}
+            >
+              {rescheduling && <Spinner size="sm" className="mr-1" />}
+              {rescheduling ? "Rescheduling..." : "Reschedule"}
+            </button>
+          )}
+          {onCancel && (
+            <button
+              type="button"
+              className="rounded-md bg-red-600 text-white px-3 py-1.5 text-sm inline-flex items-center justify-center disabled:opacity-60"
+              onClick={() => onCancel(booking)}
+              disabled={cancelling}
+            >
+              {cancelling && <Spinner size="sm" className="mr-1" />}
+              {cancelling ? "Cancelling..." : "Cancel"}
+            </button>
+          )}
         </div>
       </div>
     </div>

@@ -19,6 +19,8 @@ export default function BookingsComposer() {
   const [detailOpen, setDetailOpen] = useState<boolean>(false);
   const [selected, setSelected] = useState<Booking | null>(null);
   const [email, setEmail] = useState<string | null>(null);
+  const [cancellingId, setCancellingId] = useState<string | null>(null);
+  const [reschedulingId, setReschedulingId] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -54,19 +56,23 @@ export default function BookingsComposer() {
   };
 
   const onCancel = async (b: Booking) => {
+    setCancellingId(b.id);
     const res = await cancelReq.submit({ id: b.id });
     if (res.ok) {
       refresh();
     }
+    setCancellingId(null);
   };
 
   const onReschedule = async (b: Booking) => {
+    setReschedulingId(b.id);
     const res = await rescheduleReq.submit({ id: b.id, dateIso: b.dateIso, time: b.time });
     if (res.ok) {
       refresh();
     } else {
       router.push(`/dashboard/reservation?date=${encodeURIComponent(b.dateIso)}&time=${encodeURIComponent(b.time)}&guests=${b.guests}`);
     }
+    setReschedulingId(null);
   };
 
   return (
@@ -92,7 +98,15 @@ export default function BookingsComposer() {
           onReschedule={onReschedule}
           empty={<EmptyState title="No upcoming bookings" description="Start by creating a reservation and ordering from the menu." action={<button type="button" className="rounded-md bg-white text-black px-3 py-2 text-sm font-medium" onClick={() => router.push("/dashboard/reservation")}>Create Reservation</button>} />}
         />
-        <BookingDetailModal open={detailOpen} booking={selected} onClose={() => setDetailOpen(false)} onCancel={onCancel} onReschedule={onReschedule} />
+        <BookingDetailModal
+          open={detailOpen}
+          booking={selected}
+          onClose={() => setDetailOpen(false)}
+          onCancel={onCancel}
+          onReschedule={onReschedule}
+          cancelling={selected ? cancellingId === selected.id : false}
+          rescheduling={selected ? reschedulingId === selected.id : false}
+        />
       </main>
     </div>
   );

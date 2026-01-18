@@ -3,6 +3,7 @@ import { useRef } from "react";
 import { z } from "zod";
 import { useZodFormValidation } from "@/lib/hooks/useZodFormValidation";
 import type { MenuItem } from "@/lib/types/menu";
+import Spinner from "@/components/Spinner";
 
 type Props = {
   existingSlugs: string[];
@@ -159,7 +160,14 @@ export default function AdminMenuForm({ existingSlugs, categories, onSubmit, pen
         />
       </div>
       <div className="flex items-center justify-end gap-2">
-        <button type="submit" disabled={pending} className="rounded-md bg-white text-black px-3 py-2 text-sm font-medium disabled:opacity-60">Create</button>
+        <button
+          type="submit"
+          disabled={pending}
+          className="rounded-md bg-white text-black px-3 py-2 text-sm font-medium disabled:opacity-60 inline-flex items-center justify-center"
+        >
+          {pending && <Spinner size="sm" className="mr-2" />}
+          {pending ? "Creating..." : "Create"}
+        </button>
       </div>
     </form>
   );

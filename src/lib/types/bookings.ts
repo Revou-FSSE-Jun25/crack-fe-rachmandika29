@@ -45,6 +45,8 @@ export type BookingCardProps = {
   onViewDetails: (b: Booking) => void;
   onCancel?: (b: Booking) => void;
   onReschedule?: (b: Booking) => void;
+  cancelling?: boolean;
+  rescheduling?: boolean;
   className?: string;
 };
 
@@ -55,6 +57,8 @@ export type UpcomingBookingsListProps = {
   onViewDetails: (b: Booking) => void;
   onCancel?: (b: Booking) => void;
   onReschedule?: (b: Booking) => void;
+  cancellingId?: string | null;
+  reschedulingId?: string | null;
   className?: string;
   empty?: React.ReactNode;
 };
@@ -65,6 +69,8 @@ export type BookingDetailModalProps = {
   onClose: () => void;
   onCancel?: (b: Booking) => void;
   onReschedule?: (b: Booking) => void;
+  cancelling?: boolean;
+  rescheduling?: boolean;
   className?: string;
 };
 

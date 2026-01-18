@@ -5,6 +5,7 @@ import { useZodFormValidation } from "@/lib/hooks/useZodFormValidation";
 import { useAuthRequest } from "@/lib/hooks/useAuthRequest";
 import { useRedirectAfterAuth } from "@/lib/hooks/useRedirectAfterAuth";
 import { useFocusOnError } from "@/lib/hooks/useFocusOnError";
+import Spinner from "@/components/Spinner";
 
 type Props = { role?: "user" | "admin" };
 
@@ -106,6 +107,7 @@ export default function SignIn({ role = "user" }: Props) {
         disabled={pending}
         className="w-full inline-flex items-center justify-center rounded-md bg-white text-black px-5 py-2 font-medium hover:bg-zinc-200 transition-colors disabled:opacity-60"
       >
+        {pending && <Spinner size="sm" className="mr-2" />}
         {pending ? "Signing in..." : "Sign In"}
       </button>
     </form>

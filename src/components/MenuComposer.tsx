@@ -8,6 +8,7 @@ import StepIndicator from "@/components/StepIndicator";
 import StepSection from "@/components/StepSection";
 import Modal from "@/components/Modal";
 import OrderSummaryCard from "@/components/OrderSummaryCard";
+import Spinner from "@/components/Spinner";
 import { useSearchField } from "@/lib/hooks/useSearchField";
 import { useCategoryFilter } from "@/lib/hooks/useCategoryFilter";
 import { useDebouncedValue } from "@/lib/hooks/useDebouncedValue";
@@ -208,7 +209,12 @@ export default function MenuComposer() {
 
               <MenuGrid>
               {error && <div className="col-span-full text-center text-sm text-red-400">{error}</div>}
-              {loading && <div className="col-span-full text-center text-sm text-zinc-400">Loading menu…</div>}
+              {loading && (
+                <div className="col-span-full flex flex-col items-center justify-center gap-2 py-6 text-sm text-zinc-400">
+                  <Spinner size="lg" className="border-white/30" />
+                  <div>Loading menu…</div>
+                </div>
+              )}
               {!loading && filtered.map((item) => {
                 const qty = quantities[item.slug] ?? 0;
                 return (
@@ -241,7 +247,7 @@ export default function MenuComposer() {
               </button>
               <button
                 type="button"
-                className="rounded-md bg-white text-black px-3 py-2 text-sm font-medium disabled:opacity-60"
+                className="rounded-md bg-white text-black px-3 py-2 text-sm font-medium disabled:opacity-60 inline-flex items-center justify-center"
                 disabled={pending || cartItems.length === 0}
                 onClick={async () => {
                   setPending(true);
@@ -253,6 +259,7 @@ export default function MenuComposer() {
                   }
                 }}
               >
+                {pending && <Spinner size="sm" className="mr-2" />}
                 {pending ? "Confirming..." : "Confirm Order"}
               </button>
             </div>

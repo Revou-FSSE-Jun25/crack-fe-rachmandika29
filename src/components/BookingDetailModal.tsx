@@ -1,8 +1,9 @@
 "use client";
 import Modal from "@/components/Modal";
 import type { BookingDetailModalProps } from "@/lib/types/bookings";
+import Spinner from "@/components/Spinner";
 
-export default function BookingDetailModal({ open, booking, onClose, onCancel, onReschedule, className = "" }: BookingDetailModalProps) {
+export default function BookingDetailModal({ open, booking, onClose, onCancel, onReschedule, cancelling = false, rescheduling = false, className = "" }: BookingDetailModalProps) {
   if (!open || !booking) return null;
   const title = `${booking.dateIso} • ${booking.time} • ${booking.guests} guests`;
   const subtotal = booking.items.reduce((sum, i) => sum + i.price * i.qty, 0);
@@ -14,8 +15,28 @@ export default function BookingDetailModal({ open, booking, onClose, onCancel, o
       footer={(
         <>
           <button type="button" className="rounded-md border border-white/20 px-3 py-2 text-sm hover:bg-white/10" onClick={onClose}>Close</button>
-          {onReschedule && <button type="button" className="rounded-md border border-white/20 px-3 py-2 text-sm hover:bg-white/10" onClick={() => onReschedule(booking)}>Reschedule</button>}
-          {onCancel && <button type="button" className="rounded-md bg-red-600 text-white px-3 py-2 text-sm" onClick={() => onCancel(booking)}>Cancel</button>}
+          {onReschedule && (
+            <button
+              type="button"
+              className="rounded-md border border-white/20 px-3 py-2 text-sm hover:bg-white/10 inline-flex items-center justify-center disabled:opacity-60"
+              onClick={() => onReschedule(booking)}
+              disabled={rescheduling}
+            >
+              {rescheduling && <Spinner size="sm" className="mr-1" />}
+              {rescheduling ? "Rescheduling..." : "Reschedule"}
+            </button>
+          )}
+          {onCancel && (
+            <button
+              type="button"
+              className="rounded-md bg-red-600 text-white px-3 py-2 text-sm inline-flex items-center justify-center disabled:opacity-60"
+              onClick={() => onCancel(booking)}
+              disabled={cancelling}
+            >
+              {cancelling && <Spinner size="sm" className="mr-1" />}
+              {cancelling ? "Cancelling..." : "Cancel"}
+            </button>
+          )}
         </>
       )}
       className={className}

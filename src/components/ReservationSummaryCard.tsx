@@ -1,8 +1,9 @@
 "use client";
 import type { ReservationSummaryCardProps } from "@/lib/types/reservation";
+import Spinner from "@/components/Spinner";
 
-export default function ReservationSummaryCard({ dateIso, time, guests, onSubmit, disabled = false, className = "" }: ReservationSummaryCardProps) {
-  const ready = Boolean(dateIso && time && guests > 0) && !disabled;
+export default function ReservationSummaryCard({ dateIso, time, guests, onSubmit, disabled = false, loading = false, className = "" }: ReservationSummaryCardProps) {
+  const ready = Boolean(dateIso && time && guests > 0) && !disabled && !loading;
   return (
     <div className={`rounded-md border border-white/10 bg-zinc-900/50 p-3 sm:p-4 ${className}`}>
       <div className="space-y-2">
@@ -18,7 +19,8 @@ export default function ReservationSummaryCard({ dateIso, time, guests, onSubmit
           onClick={onSubmit}
           className="w-full inline-flex items-center justify-center rounded-md bg-white text-black px-5 py-2 font-medium hover:bg-zinc-200 transition-colors disabled:opacity-60"
         >
-          Reserve
+          {loading && <Spinner size="sm" className="mr-2" />}
+          {loading ? "Submitting..." : "Reserve"}
         </button>
       </div>
     </div>

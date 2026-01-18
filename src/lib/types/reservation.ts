@@ -18,6 +18,7 @@ export type ReservationSummaryCardProps = {
   guests: number;
   onSubmit: () => void;
   disabled?: boolean;
+  loading?: boolean;
   className?: string;
 };
 

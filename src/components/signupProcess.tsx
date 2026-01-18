@@ -5,6 +5,7 @@ import { useZodFormValidation } from "@/lib/hooks/useZodFormValidation";
 import { useAuthRequest } from "@/lib/hooks/useAuthRequest";
 import { useRedirectAfterAuth } from "@/lib/hooks/useRedirectAfterAuth";
 import { useFocusOnError } from "@/lib/hooks/useFocusOnError";
+import Spinner from "@/components/Spinner";
 
 export default function SignUp() {
   const emailRef = useRef<HTMLInputElement>(null);
@@ -125,6 +126,7 @@ export default function SignUp() {
         disabled={pending}
         className="w-full inline-flex items-center justify-center rounded-md bg-white text-black px-5 py-2 font-medium hover:bg-zinc-200 transition-colors disabled:opacity-60"
       >
+        {pending && <Spinner size="sm" className="mr-2" />}
         {pending ? "Creating account..." : "Sign Up"}
       </button>
     </form>

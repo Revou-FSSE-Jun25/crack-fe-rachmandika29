@@ -3,6 +3,7 @@ import AvailabilityBadge from "@/components/AvailabilityBadge";
 import type { AdminScheduleEditorProps } from "@/lib/types/ui";
 import { z } from "zod";
 import { useZodFormValidation } from "@/lib/hooks/useZodFormValidation";
+import Spinner from "@/components/Spinner";
 
 export default function AdminScheduleEditor({ dateIso, slots, onCreateSlot, onUpdateSlot, onDeleteSlot, onSave, pending = false, error = null, className = "" }: AdminScheduleEditorProps) {
   const addDefault = () => {
@@ -63,7 +64,14 @@ export default function AdminScheduleEditor({ dateIso, slots, onCreateSlot, onUp
         <div className="text-sm font-medium">{dateIso || "Select a date"}</div>
         <div className="flex items-center gap-2">
           <button type="button" className="rounded-md border border-white/20 px-3 py-2 text-sm hover:bg-white/10" onClick={addDefault}>Add Slot</button>
-          <button type="submit" className="rounded-md bg-white text-black px-3 py-2 text-sm font-medium disabled:opacity-60" disabled={pending}>Save Changes</button>
+          <button
+            type="submit"
+            className="rounded-md bg-white text-black px-3 py-2 text-sm font-medium disabled:opacity-60 inline-flex items-center justify-center"
+            disabled={pending}
+          >
+            {pending && <Spinner size="sm" className="mr-2" />}
+            {pending ? "Saving..." : "Save Changes"}
+          </button>
         </div>
       </div>
       {error && <div className="text-sm text-red-400">{error}</div>}
