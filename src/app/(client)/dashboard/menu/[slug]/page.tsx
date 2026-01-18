@@ -19,7 +19,13 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
     const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "https://be.dahar.services";
     const res = await fetch(`${API_BASE}/menu`, { method: "GET", cache: "no-store" });
     const json = await res.json().catch(() => null);
-    const listSource = Array.isArray(json) ? json : Array.isArray(json?.items) ? json.items : [];
+    const listSource = Array.isArray(json)
+      ? json
+      : Array.isArray(json?.items)
+      ? json.items
+      : Array.isArray((json as any)?.data)
+      ? (json as any).data
+      : [];
     items = (listSource as any[]).map((raw) => {
       const id = typeof raw?.id === "number" ? raw.id : Number(raw?.id ?? 0);
       const name = String(raw?.name ?? "");
