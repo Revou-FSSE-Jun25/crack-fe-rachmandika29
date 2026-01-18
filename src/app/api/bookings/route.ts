@@ -129,10 +129,10 @@ export async function GET(request: Request) {
       );
     }
     const list =
-      Array.isArray(upstreamJson) && !upstreamJson.data
-        ? upstreamJson
-        : Array.isArray(upstreamJson?.data)
+      Array.isArray(upstreamJson?.data)
         ? upstreamJson.data
+        : Array.isArray(upstreamJson)
+        ? upstreamJson
         : [];
     return NextResponse.json(list, { status: res.status });
   } catch {
