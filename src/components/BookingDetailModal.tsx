@@ -50,7 +50,7 @@ export default function BookingDetailModal({ open, booking, onClose, onCancel, o
               <div key={i.slug} className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="text-sm">{i.name}</div>
-                  <div className="text-xs text-zinc-400">Rp {i.price.toLocaleString()}</div>
+                  <div className="text-xs text-zinc-400">${i.price.toLocaleString()}</div>
                 </div>
                 <div className="text-sm">× {i.qty}</div>
               </div>
@@ -58,7 +58,7 @@ export default function BookingDetailModal({ open, booking, onClose, onCancel, o
             <div className="h-px bg-white/10" />
             <div className="flex items-center justify-between">
               <div className="text-sm">Subtotal</div>
-              <div className="text-sm">Rp {subtotal.toLocaleString()}</div>
+              <div className="text-sm">${subtotal.toLocaleString()}</div>
             </div>
           </div>
         </div>

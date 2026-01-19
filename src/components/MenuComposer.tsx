@@ -162,7 +162,7 @@ export default function MenuComposer() {
       >
         <div className="space-y-1">
           <div>{cartItems.length} items</div>
-          <div>Rp {subtotal.toLocaleString()}</div>
+          <div>${subtotal.toLocaleString()}</div>
         </div>
       </Modal>
 

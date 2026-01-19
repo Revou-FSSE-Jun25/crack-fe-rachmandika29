@@ -19,7 +19,7 @@ export default function OrderSummaryCard({ items, quantities, onIncrement, onDec
               <div key={i.slug} className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="text-sm">{i.name}</div>
-                  <div className="text-xs text-zinc-400">Rp {i.price.toLocaleString()}</div>
+                  <div className="text-xs text-zinc-400">${i.price.toLocaleString()}</div>
                 </div>
                 <div className="flex items-center gap-2">
                   <button type="button" className="rounded-md border border-white/20 px-2 py-1 text-sm hover:bg-white/10" onClick={() => onDecrement(i.slug)}>-</button>
@@ -32,7 +32,7 @@ export default function OrderSummaryCard({ items, quantities, onIncrement, onDec
           <div className="h-px bg-white/10" />
           <div className="flex items-center justify-between">
             <div className="text-sm">Subtotal</div>
-            <div className="text-sm">Rp {subtotal.toLocaleString()}</div>
+            <div className="text-sm">${subtotal.toLocaleString()}</div>
           </div>
         </div>
       )}

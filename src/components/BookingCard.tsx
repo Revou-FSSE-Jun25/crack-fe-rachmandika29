@@ -35,7 +35,7 @@ export default function BookingCard({ booking, onViewDetails, onCancel, onResche
           <div className="text-sm text-zinc-300">{booking.time}</div>
           <div className="text-sm text-zinc-300">{booking.guests} guests</div>
         </div>
-        <div className="text-sm">Rp {subtotal.toLocaleString()}</div>
+        <div className="text-sm">${subtotal.toLocaleString()}</div>
       </div>
       <div className="mt-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-zinc-400">
