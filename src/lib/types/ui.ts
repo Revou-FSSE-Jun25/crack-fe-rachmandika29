@@ -53,6 +53,7 @@ export type DashboardCardProps = {
   title: string;
   description: string;
   href: string;
+  imageSrc?: string;
 };
 
 import type { Slot } from "@/lib/types/reservation";

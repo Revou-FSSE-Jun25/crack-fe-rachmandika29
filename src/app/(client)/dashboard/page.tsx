@@ -15,16 +15,19 @@ export default function Home() {
             title="Reservation"
             description="Step 1: Choose date and details"
             href="/dashboard/reservation"
+            imageSrc="/couple-drinking-coffee-cafe.jpg"
           />
           <DashboardCard
             title="Menu"
             description="Step 2: Select dishes (after reservation)"
             href="/dashboard/menu"
+            imageSrc="/tasty-grilled-steak-served-dark-closeup.jpg"
           />
           <DashboardCard
             title="Bookings"
             description="Step 3: Review confirmed bookings (after reservation + menu)"
             href="/dashboard/bookings"
+            imageSrc="/napkins-table-dark-room.jpg"
           />
         </MenuGrid>
       </main>
