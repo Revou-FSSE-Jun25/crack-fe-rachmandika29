@@ -1,15 +1,26 @@
 "use client";
+import Image from "next/image";
 import AvailabilityBadge from "@/components/AvailabilityBadge";
 import type { AdminMenuCardProps } from "@/lib/types/menu";
 
 export default function AdminMenuCard({ item, available, onToggle, className = "" }: AdminMenuCardProps) {
   return (
     <div className={`h-full flex flex-col rounded-md border border-white/10 bg-zinc-900/50 overflow-hidden ${className}`}>
-      <div className="aspect-video bg-black/50" />
+      <div className="aspect-video bg-black/50 relative overflow-hidden">
+        {item.image ? (
+          <Image
+            src={item.image}
+            alt={item.name}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-cover"
+          />
+        ) : null}
+      </div>
       <div className="p-4 space-y-2 flex-1">
         <div className="flex items-center justify-between">
           <h3 className="font-semibold line-clamp-1">{item.name}</h3>
-          <span className="text-sm text-zinc-400">Rp {item.price.toLocaleString()}</span>
+          <span className="text-sm text-zinc-400">${item.price.toLocaleString()}</span>
         </div>
         <p className="text-sm text-zinc-400 line-clamp-2">{item.description}</p>
         <div className="flex items-center gap-2 mt-2">
