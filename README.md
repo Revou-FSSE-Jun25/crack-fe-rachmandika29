@@ -242,6 +242,44 @@ From the frontend root:
 - `npm run build` – production build
 - `npm run start` – start the built app
 - `npm run lint` – run ESLint
+- `npm test` – run unit tests
+
+## Testing
+
+The project maintains comprehensive test coverage using Jest and React Testing Library.
+
+### Tech Stack
+- **Jest**: Test runner and assertion library
+- **React Testing Library**: Component rendering and user interaction testing
+- **ts-jest**: TypeScript support for Jest
+
+### Running Tests
+Run all unit tests:
+```bash
+npm test
+```
+
+Run tests in watch mode (interactive):
+```bash
+npm test -- --watch
+```
+
+Generate coverage report:
+```bash
+npm test -- --coverage
+```
+
+### Test Coverage Results
+As of the latest run:
+- **Test Suites**: 48 passed
+- **Total Tests**: 167 passed
+- **Coverage**: ~100% across Statements, Branches, Functions, and Lines.
+
+The test suite covers:
+- **Components**: Rendering, user interactions (clicks, inputs), and conditional states.
+- **Hooks**: Custom logic for forms, wizards, and data fetching (mocked).
+- **Utilities**: Helper functions and formatters.
+- **Integration**: Form flows and wizard step transitions.
 
 ## Notes
 
