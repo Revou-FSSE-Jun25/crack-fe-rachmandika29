@@ -99,7 +99,8 @@ export async function POST(request: Request) {
     if (!upstream.ok) {
       return NextResponse.json(json ?? { error: "Failed to create menu item" }, { status: upstream.status || 400 });
     }
-    return NextResponse.json(json ?? { ok: true }, { status: upstream.status });
+    const mapped = mapMenuItem(json || {});
+    return NextResponse.json(mapped, { status: upstream.status });
   } catch {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
