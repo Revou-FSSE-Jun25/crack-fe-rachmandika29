@@ -2,10 +2,12 @@
 import Modal from "@/components/Modal";
 import type { BookingDetailModalProps } from "@/lib/types/bookings";
 import Spinner from "@/components/Spinner";
+import { formatToLocal } from "@/lib/utils";
 
 export default function BookingDetailModal({ open, booking, onClose, onCancel, onReschedule, cancelling = false, rescheduling = false, className = "" }: BookingDetailModalProps) {
   if (!open || !booking) return null;
-  const title = `${booking.dateIso} • ${booking.time} • ${booking.guests} guests`;
+  const { full } = formatToLocal(booking.dateIso, booking.time);
+  const title = `${full} • ${booking.guests} guests`;
   const subtotal = booking.items.reduce((sum, i) => sum + i.price * i.qty, 0);
   return (
     <Modal

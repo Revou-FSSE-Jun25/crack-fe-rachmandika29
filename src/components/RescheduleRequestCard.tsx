@@ -1,8 +1,11 @@
 "use client";
 import type { RescheduleRequestCardProps } from "@/lib/types/bookings";
+import { formatToLocal } from "@/lib/utils";
 
 export default function RescheduleRequestCard({ request, onAccept, onReject, onView, className = "" }: RescheduleRequestCardProps) {
   const s = request;
+  const current = formatToLocal(s.currentDateIso, s.currentTime);
+  const requested = formatToLocal(s.requestedDateIso, s.requestedTime);
   return (
     <div className={`rounded-md border border-white/10 bg-zinc-900/50 p-3 sm:p-4 ${className}`}>
       <div className="flex items-center justify-between">
@@ -12,11 +15,11 @@ export default function RescheduleRequestCard({ request, onAccept, onReject, onV
       <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
         <div>
           <div className="text-zinc-400">Current</div>
-          <div>{s.currentDateIso} • {s.currentTime}</div>
+          <div>{current.full}</div>
         </div>
         <div>
           <div className="text-zinc-400">Requested</div>
-          <div>{s.requestedDateIso} • {s.requestedTime}</div>
+          <div>{requested.full}</div>
         </div>
       </div>
       <div className="mt-2 text-xs text-zinc-400">Guests: {s.guests}</div>

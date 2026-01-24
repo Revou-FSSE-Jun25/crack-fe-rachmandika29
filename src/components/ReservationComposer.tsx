@@ -122,7 +122,7 @@ export default function ReservationComposer() {
             </button>
           </div>
         }>
-          <TimeSlotPicker slots={slots as Slot[]} selected={time} onSelect={setTime} />
+          <TimeSlotPicker slots={slots as Slot[]} selected={time} onSelect={setTime} dateIso={dateIso} />
         </StepSection>
       )}
       {currentStep === 3 && (

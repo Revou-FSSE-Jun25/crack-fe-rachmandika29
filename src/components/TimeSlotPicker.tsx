@@ -1,8 +1,9 @@
 "use client";
 import { useMemo } from "react";
 import type { TimeSlotPickerProps } from "@/lib/types/reservation";
+import { formatToLocal } from "@/lib/utils";
 
-export default function TimeSlotPicker({ slots, selected = null, onSelect, className = "" }: TimeSlotPickerProps) {
+export default function TimeSlotPicker({ slots, selected = null, onSelect, dateIso, className = "" }: TimeSlotPickerProps) {
   const list = useMemo(() => slots, [slots]);
   return (
     <div className={`rounded-md border border-white/10 bg-zinc-900/50 ${className}`}>
@@ -10,6 +11,7 @@ export default function TimeSlotPicker({ slots, selected = null, onSelect, class
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 px-3 pb-3 sm:px-4 sm:pb-4">
         {list.map((s) => {
           const isSelected = selected === s.time;
+          const label = dateIso ? formatToLocal(dateIso, s.time).time : s.time;
           return (
             <button
               key={s.time}
@@ -21,7 +23,7 @@ export default function TimeSlotPicker({ slots, selected = null, onSelect, class
                 isSelected ? "bg-white text-black border-white" : "border-white/10 hover:bg-white/10"
               } ${s.available ? "" : "opacity-40 cursor-not-allowed"}`}
             >
-              <span>{s.time}</span>
+              <span>{label}</span>
               {typeof s.capacity === "number" && (
                 <span className="text-xs text-zinc-400">{s.capacity}</span>
               )}

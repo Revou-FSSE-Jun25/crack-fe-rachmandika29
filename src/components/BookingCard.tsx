@@ -1,6 +1,7 @@
 "use client";
 import type { Booking } from "@/lib/types/bookings";
 import Spinner from "@/components/Spinner";
+import { formatToLocal } from "@/lib/utils";
 
 type Props = {
   booking: Booking;
@@ -26,13 +27,15 @@ function Badge({ status }: { status: Booking["status"] }) {
 
 export default function BookingCard({ booking, onViewDetails, onCancel, onReschedule, cancelling = false, rescheduling = false, className = "" }: Props) {
   const subtotal = typeof booking.subtotal === "number" ? booking.subtotal : booking.items.reduce((sum, i) => sum + i.price * i.qty, 0);
+  const { date, time } = formatToLocal(booking.dateIso, booking.time);
+
   return (
-    <div className={`rounded-md border border-white/10 bg-zinc-900/50 p-3 sm:p-4 ${className}`} role="listitem" aria-label={`${booking.dateIso} ${booking.time}`}>
+    <div className={`rounded-md border border-white/10 bg-zinc-900/50 p-3 sm:p-4 ${className}`} role="listitem" aria-label={`${date} ${time}`}>
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
           <Badge status={booking.status} />
-          <div className="text-sm font-medium">{booking.dateIso}</div>
-          <div className="text-sm text-zinc-300">{booking.time}</div>
+          <div className="text-sm font-medium">{date}</div>
+          <div className="text-sm text-zinc-300">{time}</div>
           <div className="text-sm text-zinc-300">{booking.guests} guests</div>
         </div>
         <div className="text-sm">${subtotal.toLocaleString()}</div>

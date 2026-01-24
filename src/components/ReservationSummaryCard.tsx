@@ -1,15 +1,21 @@
 "use client";
 import type { ReservationSummaryCardProps } from "@/lib/types/reservation";
 import Spinner from "@/components/Spinner";
+import { formatToLocal } from "@/lib/utils";
 
 export default function ReservationSummaryCard({ dateIso, time, guests, onSubmit, disabled = false, loading = false, className = "" }: ReservationSummaryCardProps) {
   const ready = Boolean(dateIso && time && guests > 0) && !disabled && !loading;
+  
+  const formatted = (dateIso && time) ? formatToLocal(dateIso, time) : null;
+  const displayDate = formatted ? formatted.date : (dateIso || "Select a date");
+  const displayTime = formatted ? formatted.time : (time || "Select a time");
+
   return (
     <div className={`rounded-md border border-white/10 bg-zinc-900/50 p-3 sm:p-4 ${className}`}>
       <div className="space-y-2">
         <div className="text-sm font-medium">Reservation Summary</div>
-        <div className="text-sm text-zinc-300">{dateIso || "Select a date"}</div>
-        <div className="text-sm text-zinc-300">{time || "Select a time"}</div>
+        <div className="text-sm text-zinc-300">{displayDate}</div>
+        <div className="text-sm text-zinc-300">{displayTime}</div>
         <div className="text-sm text-zinc-300">{guests > 0 ? `${guests} guests` : "Select party size"}</div>
       </div>
       <div className="mt-4">

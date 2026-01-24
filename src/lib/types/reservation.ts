@@ -41,6 +41,7 @@ export type TimeSlotPickerProps = {
   slots: Slot[];
   selected?: string | null;
   onSelect: (time: string) => void;
+  dateIso?: string | null;
   className?: string;
 };
 

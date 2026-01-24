@@ -7,6 +7,7 @@ import { useTimeSlotsForDate } from "@/lib/hooks/useTimeSlotsForDate";
 import { z } from "zod";
 import { useZodFormValidation } from "@/lib/hooks/useZodFormValidation";
 import type { Booking } from "@/lib/types/bookings";
+import { formatToLocal } from "@/lib/utils";
 
 type ClientRescheduleModalProps = {
   open: boolean;
@@ -28,7 +29,8 @@ export default function ClientRescheduleModal({ open, booking, onConfirm, onClos
     submit(() => onConfirm(booking, values.dateIso, values.time));
   };
 
-  const title = `Reschedule ${booking.dateIso} • ${booking.time}`;
+  const { full } = formatToLocal(booking.dateIso, booking.time);
+  const title = `Reschedule ${full}`;
 
   return (
     <Modal
@@ -49,7 +51,7 @@ export default function ClientRescheduleModal({ open, booking, onConfirm, onClos
         )}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
           <DatePickerCalendar availableDates={availableDates} selected={values.dateIso} onSelect={(d) => setValue("dateIso", d)} />
-          <TimeSlotPicker slots={slots} selected={values.time} onSelect={(t) => setValue("time", t)} />
+          <TimeSlotPicker slots={slots} selected={values.time} onSelect={(t) => setValue("time", t)} dateIso={values.dateIso} />
         </div>
       </div>
     </Modal>
